@@ -1,20 +1,23 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mediclinique/Authentification/Signup.dart';
+import 'package:mediclinique/Pages/Home.dart';
+import 'package:mediclinique/Services/Firebase/Auth.dart';
 
-class Login extends StatefulWidget{
+class Login extends StatefulWidget {
   const Login({super.key});
 
   @override
   State<Login> createState() {
     return LoginState();
   }
-  
 }
 
-class LoginState extends State<Login>{
+class LoginState extends State<Login> {
   final formkey = GlobalKey<FormState>();
   final email = TextEditingController();
   final password = TextEditingController();
+  bool isLoading = false;
   bool showpassword = false;
 
   @override
@@ -22,22 +25,35 @@ class LoginState extends State<Login>{
     final largeurEcran = MediaQuery.of(context).size.width;
     final hauteurEcran = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: Form(
-          key: formkey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.asset("assets/images/medii2.jpg",width: largeurEcran,),
-              SizedBox(height: hauteurEcran*0.02,),
-              Text("Se connecter",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-              Text("Svp connectez-vous pour continuer"),
-               SizedBox(height: hauteurEcran*0.02,),
-              // email
+            key: formkey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.asset(
+                  "assets/images/medii2.jpg",
+                  width: largeurEcran,
+                ),
+                SizedBox(
+                  height: hauteurEcran * 0.02,
+                ),
+                Text(
+                  "Se connecter",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Text("Svp connectez-vous pour continuer"),
+                SizedBox(
+                  height: hauteurEcran * 0.02,
+                ),
+                // email
                 Container(
-                  width: largeurEcran*0.88,
+                  width: largeurEcran * 0.88,
+                  height: 50,
                   margin: EdgeInsets.all(8),
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
@@ -64,8 +80,10 @@ class LoginState extends State<Login>{
                   ),
                 ),
 
-                 //password
+                //password
                 Container(
+                  width: largeurEcran * 0.88,
+                  height: 50,
                   margin: EdgeInsets.all(8),
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
@@ -102,22 +120,55 @@ class LoginState extends State<Login>{
                 ),
                 // bouton de connexion
                 Container(
-                  width: largeurEcran * 0.9,
-                  height: 60,
+                  width: largeurEcran * 0.88,
+                  height: 50,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: Colors.blue),
                   child: TextButton(
-                    onPressed: () async {
-                      if (formkey.currentState!.validate()) {
-                        // lofin connexion
-                      }
-                    },
-                    child: Text(
-                      "Se connecter",
-                      style: TextStyle(
-                          fontSize: largeurEcran * 0.04, color: Colors.white),
-                    ),
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            if (formkey.currentState!.validate()) {
+                              // Logique de connexion
+                              try {
+                                Auth().SigninWithEmailAndPassword(
+                                    email.text, password.text);
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              } on FirebaseAuthException catch (e) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                // message d'erreur
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("${e.message}"),
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Color(0xffE9494F),
+                                    showCloseIcon: true,
+                                  ),
+                                );
+                              }
+                              // naviguer vers la page home
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Home()));
+                            }
+                          },
+                    child: isLoading
+                        ? const CircularProgressIndicator()
+                        : Text(
+                            "Se connecter",
+                            style: TextStyle(
+                                fontSize: largeurEcran * 0.04,
+                                color: Colors.white),
+                          ),
                   ),
                 ),
                 //bouton d'inscription
@@ -144,11 +195,9 @@ class LoginState extends State<Login>{
                     )
                   ],
                 ),
-            ],
-          )
-          ),
+              ],
+            )),
       ),
     );
   }
-  
 }
