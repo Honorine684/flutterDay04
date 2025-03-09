@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mediclinique/Authentification/Signup.dart';
+import 'package:mediclinique/Authentification/SignupMedecin.dart';
 import 'package:mediclinique/Pages/Home.dart';
 import 'package:mediclinique/Services/Firebase/Auth.dart';
 
@@ -190,7 +190,7 @@ class LoginState extends State<Login> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Signup()));
+                                builder: (context) =>const Signupmedecin()));
                       }),
                     )
                   ],
