@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class Accueil extends StatefulWidget {
+  const Accueil({super.key});
+
   @override
-  _AccueilState createState() => _AccueilState();
+  AccueilState createState() => AccueilState();
 }
 
-class _AccueilState extends State<Accueil> {
+class AccueilState extends State<Accueil> {
   final TextEditingController _rechercheController = TextEditingController();
-  final PageController _pageController = PageController();
-  int _indexActuel = 0;
+  final PageController pageController = PageController();
+  int indexActuel = 0;
 
   List<Map<String, String>> conseilsSante = [
     {
@@ -44,8 +46,27 @@ class _AccueilState extends State<Accueil> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 20),
-                    Text("Bonjour", style: TextStyle(color: Colors.white, fontSize: 16)),
-                    Text("Abdou", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          children: [
+                            Text("Bonjour", style: TextStyle(color: Colors.white, fontSize: 16)),
+                            Text("Abdou", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                          ],
+                          
+                        ),
+                        Row(
+                          children: [
+                            IconButton(
+                          onPressed: (){},
+                           icon: Icon(Icons.location_pin,color: Colors.white,)),
+                           Text("Calavi,sos",style: TextStyle(fontSize: 14,color: Colors.white),)
+                          ],
+                        )
+                      ],
+                    ),
+                    
                     SizedBox(height: 10),
 
                     // Barre de recherche
@@ -82,7 +103,7 @@ class _AccueilState extends State<Accueil> {
               SizedBox(height: 20),
 
               // PageView avec conseils de santé
-              Container(
+            /*  Container(
                 height: 150,
                 child: PageView.builder(
                   controller: _pageController,
@@ -100,7 +121,7 @@ class _AccueilState extends State<Accueil> {
                     );
                   },
                 ),
-              ),
+              ),*/
               SizedBox(height: 10),
 
               // Indicateur de pagination
@@ -110,10 +131,10 @@ class _AccueilState extends State<Accueil> {
                   conseilsSante.length,
                   (index) => Container(
                     margin: EdgeInsets.symmetric(horizontal: 5),
-                    width: _indexActuel == index ? 12 : 8,
+                    width: indexActuel == index ? 12 : 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: _indexActuel == index ? Colors.blue : Colors.grey,
+                      color: indexActuel == index ? Colors.blue : Colors.grey,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -122,7 +143,7 @@ class _AccueilState extends State<Accueil> {
               SizedBox(height: 20),
 
               // Section spécialistes
-              Container(
+             /* Container(
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,7 +160,7 @@ class _AccueilState extends State<Accueil> {
                     ),
                   ],
                 ),
-              ),
+              ),*/
               SizedBox(height: 20),
 
               // Liste des médecins disponibles avec images
@@ -201,8 +222,8 @@ class _AccueilState extends State<Accueil> {
       onTap: onTap,
       child: Column(
         children: [
-          Icon(icon, size: 30, color: Colors.blue),
-          Text(label),
+          Icon(icon, size: 30, color: Colors.white),
+          Text(label,style: TextStyle(color: Colors.white),),
         ],
       ),
     );
