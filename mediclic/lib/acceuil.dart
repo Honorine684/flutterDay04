@@ -153,8 +153,8 @@ class _AccueilState extends State<Accueil> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        profilMedecin("Dr. Alice", "assets/images/doc1.png", () => print("Dr. Alice cliquée")),
-                        profilMedecin("Dr. Bruno", "assets/images/doc2.png", () => print("Dr. Bruno cliqué")),
+                        profilMedecin("Dr. Alice", "assets/image/hopital.png", () => print("Dr. Alice cliquée")),
+                        profilMedecin("Dr. Bruno", "assets/image/pilules.png", () => print("Dr. Bruno cliqué")),
                       ],
                     ),
                   ],

@@ -19,10 +19,9 @@ class _CardioState extends State<Cardio> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
         ),
-        child: SafeArea(child: 
-        SingleChildScrollView(
-          child: 
-          Column(
+        child: SafeArea(
+            child: SingleChildScrollView(
+          child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -30,18 +29,23 @@ class _CardioState extends State<Cardio> {
                   Container(
                     width: 50,
                     height: 50,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.white,
-                    border: Border.all(color: Colors.grey,
-                    width: 1)),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey, width: 1)),
                     child: Icon(Icons.arrow_back),
                   ),
-                  Text('Cardiologue',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
+                  Text(
+                    'Cardiologue',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
                   Container(
                     width: 50,
                     height: 50,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.white,
-                    border: Border.all(color: Colors.grey,
-                    width: 1)),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey, width: 1)),
                     child: Icon(Icons.more_vert),
                   ),
                 ],
@@ -49,35 +53,73 @@ class _CardioState extends State<Cardio> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Les spécialistes'),
-                  Icon(Icons.menu)
+                  Text('Les spécialités',style: TextStyle(color: Colors.grey),),
+                  Icon(Icons.menu,color: Colors.blue,)
                 ],
               ),
+              SizedBox(height: 15),
               Container(
-                width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.white
-                      ),
+                width: 1000,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10), // Bordures arrondies
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      blurRadius: 5,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset('assets/images/'),
-                    Row(
-                      children: [
-                        Column(
-                          children: [
-                            Text("Dr John ",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
-                            Text("UK Medical (cardiologue)",style: TextStyle(color: Colors.grey,fontSize: 10),),
-                            Row(
-                              children: [
-                                Icon(Icons.star,color: Colors.yellow,)
-                              ]
-                            )
-                            
-                          ],
-                        )
-                      ],
-                    )
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(10), // Arrondi de l'image
+                        border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(
+                          'assets/images/doctor.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10), // Espacement entre l'image et le texte
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Dr John",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                          Text(
+                            "UK Medical (cardiologue)",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+                          SizedBox(height: 5), // Espacement avant l'icône
+                          Row(
+                            children: [
+                              Text('Voir details',style: TextStyle(color: Colors.blue),)
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               )
