@@ -3,7 +3,8 @@ import 'package:mediclinique/JsonModels/JourDisponibilite.dart';
 import 'package:mediclinique/Component/horairewidget/SelectorAvailable.dart';
 
 class Step5 extends StatefulWidget {
-  const Step5({super.key});
+  final Function(Map<String, dynamic>) onDataChanged;
+  const Step5({super.key, required this.onDataChanged});
 
   @override
   State<Step5> createState() {
@@ -12,26 +13,24 @@ class Step5 extends StatefulWidget {
 }
 
 class Step3State extends State<Step5> {
-List<Jourdisponibilite> doctorAvailability = []; 
+  List<Jourdisponibilite> doctorAvailability = [];
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-      // horaire de disponibilite
+        // horaire de disponibilite
         Selectoravailable(
-                onDaychanged: (availability) {
-                  doctorAvailability = availability;
-                },
-              ),
+          onDaychanged: (availability) {
+            setState(() {
+              doctorAvailability = availability;
+            });
+
+            widget.onDataChanged({
+              'doctorAvailability': doctorAvailability,
+            });
+          },
+        ),
       ],
     );
-
-
   }
 }
-/* 
-    specialites medicales
-    etablissements d'exercics
-    horaires de disponibilite
-    
-    */

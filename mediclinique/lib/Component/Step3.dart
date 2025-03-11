@@ -4,7 +4,11 @@ import 'package:mediclinique/JsonModels/Specialite.dart';
 import 'package:mediclinique/Services/Firebase/FirestoreService.dart';
 
 class Step3 extends StatefulWidget {
-  const Step3({super.key});
+  final Function(Map<String, dynamic>) onDataChanged;
+  const Step3({
+    super.key,
+    required this.onDataChanged,
+  });
 
   @override
   State<Step3> createState() {
@@ -13,6 +17,20 @@ class Step3 extends StatefulWidget {
 }
 
 class Step3State extends State<Step3> {
+  void updateData() {
+    widget.onDataChanged({
+      'rpps': controller.text, // Envoi de la valeur RPPS
+      'specialite':
+          selectedSpecialite?.libelle, // Envoi de la spécialité sélectionnée
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(updateData);
+    super.dispose();
+  }
+
   List<Specialite> specialites = [];
   Specialite? selectedSpecialite;
   void loadSpecialite() {
@@ -42,20 +60,27 @@ class Step3State extends State<Step3> {
     });
   }
 
+  void onSpecialiteChanged(Specialite newSpecialite) {
+    setState(() {
+      selectedSpecialite = newSpecialite;
+    });
+  }
+
   @override
   void initState() {
     loadSpecialite();
+    controller.addListener(updateData);
     super.initState();
   }
 
   final controller = TextEditingController();
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         // RPPS
-        RPPSFormField(),
+        RPPSFormField(controller: controller),
         /* 
       10101010101
 29900010208
@@ -92,7 +117,9 @@ class Step3State extends State<Step3> {
             }).toList(),
             onChanged: (Specialite? newValue) async {
               setState(() {
-                selectedSpecialite = newValue;
+                if (newValue != null) {
+                  onSpecialiteChanged(newValue);
+                }
               });
             },
           ),

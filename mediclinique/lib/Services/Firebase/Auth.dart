@@ -40,50 +40,60 @@ Future<void> inscrireMedecin(
   String email,
   String adresse,
   String password,
-  Timestamp dateNaissance,
-  String sexe,
+  String dateOfNaiss,
+  String gender, // Renommez ce paramètre pour correspondre à ce que vous utilisez
   String rpps,
-  String specialiteId,
+  String photo,
   String specialite,
   List<Jourdisponibilite> jours,
   {String role = 'medecin'}
-
-)async{
-  
-
-  try{
-    UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
-    String userId = userCredential.user!.uid;
-         final WriteBatch batch = firestore.batch();
+) async {
+  try {
+    // Créer un utilisateur Firebase
+    UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+      email: email, 
+      password: password
+    );
     
-    DocumentReference userRef = firestore.collection('users').doc(userId);
-    batch.set(userRef, {
+    // Ajouter les informations de l'utilisateur - Utilisez les mêmes noms de champs partout
+    await firestore.collection('users').doc(userCredential.user!.uid).set({
       'nom': nom,
       'email': email,
       'adresse': adresse,
-      'dateNaissance':dateNaissance,
-      'sexe':sexe,
-      'rpps':rpps,
-      'specialiteId':specialiteId,
-      'specialite':specialite,
-      'role': 'medecin',
+      'dateOfNaiss': dateOfNaiss, // Gardez ce nom de champ cohérent
+      'gender': gender,           // Gardez ce nom de champ cohérent
+      'rpps': rpps,
+      'photo': photo,
+      'specialite': specialite,
+      'role': role,
       'timestamp': Timestamp.now(),
     });
+
+    print("Document principal créé avec dateOfNaiss: $dateOfNaiss et gender: $gender");
     
-    //Ajouter les créneaux dans une sous-collection
-    for (Jourdisponibilite jour in jours) {
-      DocumentReference creneauRef = userRef.collection('creneaux').doc();
-      batch.set(creneauRef, jour.toMap());
+    // Le reste du code pour les créneaux...
+    List<Jourdisponibilite> joursDisponibles = jours.where((jour) => jour.estDisponible).toList();
+    
+    for (Jourdisponibilite jour in joursDisponibles) {
+      if (jour.estDisponible && jour.creneaux.isNotEmpty) {
+        DocumentReference jourRef = firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .collection('creneaux')
+            .doc(jour.day);
+        
+        await jourRef.set(jour.toMap());
+        print('Créneaux ajoutés pour ${jour.day}');
+      }
     }
-    
-    // Exécuter toutes les opérations Firestore
-    await batch.commit();
-    
-    print('Compte medecin créé avec succès!');
-  }catch(e){
-    print("Erreur lors de la creation du medecin $e");
+
+    print('Compte médecin créé avec succès!');
+  } catch (e) {
+    print("Erreur lors de la création du médecin: $e");
+    throw e;
   }
 }
+
 
 Future<void> inscrireClinique(
     String username,String adresse, String email,String password,{String role = 'clinique'})async {

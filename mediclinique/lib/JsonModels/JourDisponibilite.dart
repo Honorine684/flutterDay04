@@ -23,9 +23,9 @@ class Jourdisponibilite {
 
   Map<String, dynamic> toMap() {
     return {
-      'day': day,
-      'creneaux': creneaux.map((creneau) => creneau.toMap()).toList(), // Conversion des créneaux en Map
+      'jour': day,
       'estDisponible': estDisponible,
+      'creneaux': creneaux.map((creneau) => creneau.toMap()).toList(),
     };
   }
 }

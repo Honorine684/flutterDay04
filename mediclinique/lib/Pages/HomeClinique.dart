@@ -66,12 +66,6 @@ Future<void> getUserData()async{
           ),
           actions: [
             Text(adresse)
-            /*Row(
-              children: [
-                Icon(Icons.location_pin),
-                Text(adresse)
-              ],
-            )*/
           ],
         ),
         body: SingleChildScrollView(

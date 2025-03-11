@@ -1,42 +1,30 @@
 import 'package:flutter/material.dart';
 
 class Genrechoice extends StatefulWidget {
-  const Genrechoice({super.key});
+  const Genrechoice({super.key, required this.selectedGender, required this.onGenderChanged});
+
+  final String selectedGender;
+  final void Function(String gender) onGenderChanged; // Callback
 
   @override
-  State<Genrechoice> createState() {
-    return GenrechoiceState();
-  }
+  State<Genrechoice> createState() => GenrechoiceState();
 }
 
-List<String> sexe = ['Femme', 'Homme'];
-
 class GenrechoiceState extends State<Genrechoice> {
-  String currentOption = sexe[0];
-
   @override
   Widget build(BuildContext context) {
-    return
-
-        // Utilisation d'Expanded pour s'assurer que les éléments dans le Row prennent toute la largeur disponible
-        Row(
+    return Row(
       children: [
-        Text(
-          "Votre sexe",
-          style: TextStyle(fontSize: 14),
-        ),
+        Text("Votre sexe", style: TextStyle(fontSize: 14)),
         Expanded(
           child: ListTile(
-            title: Text(
-              "Femme",
-              style: TextStyle(fontSize: 10),
-            ),
+            title: Text("Femme", style: TextStyle(fontSize: 10)),
             leading: Radio<String>(
-              value: sexe[0],
-              groupValue: currentOption,
+              value: 'Femme',
+              groupValue: widget.selectedGender,
               onChanged: (String? value) {
                 setState(() {
-                  currentOption = value!;
+                  widget.onGenderChanged(value!); // Envoie du genre sélectionné au parent
                 });
               },
             ),
@@ -44,16 +32,13 @@ class GenrechoiceState extends State<Genrechoice> {
         ),
         Expanded(
           child: ListTile(
-            title: Text(
-              "Homme",
-              style: TextStyle(fontSize: 10),
-            ),
+            title: Text("Homme", style: TextStyle(fontSize: 10)),
             leading: Radio<String>(
-              value: sexe[1],
-              groupValue: currentOption,
+              value: 'Homme',
+              groupValue: widget.selectedGender,
               onChanged: (String? value) {
                 setState(() {
-                  currentOption = value!;
+                  widget.onGenderChanged(value!); // Envoie du genre sélectionné au parent
                 });
               },
             ),

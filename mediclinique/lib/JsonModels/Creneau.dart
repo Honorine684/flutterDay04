@@ -17,10 +17,12 @@ class Creneau {
     final minute = time.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
   }
-  Map<String,dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
-      'start':start,
-      'end':start,
+      'startHour': start.hour,
+      'startMinute': start.minute,
+      'endHour': end.hour,
+      'endMinute': end.minute,
     };
   }
 }

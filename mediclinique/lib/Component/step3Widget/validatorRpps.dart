@@ -51,13 +51,17 @@ class RPPSValidator {
 
 
 class RPPSFormField extends StatelessWidget {
-  const RPPSFormField({super.key});
+  final TextEditingController controller;
+  const RPPSFormField(
+    {
+      super.key,
+      required this.controller,
+      });
 
 
 
   @override
   Widget build(BuildContext context) {
-    final rpps = TextEditingController();
     final formKey1 = GlobalKey<FormState>();
     return Form
     
@@ -78,7 +82,7 @@ class RPPSFormField extends StatelessWidget {
           ),
           child: 
     TextFormField(
-      controller: rpps,
+      controller: controller,
      decoration: const InputDecoration(
               icon: Icon(Icons.badge),
               border: InputBorder.none,

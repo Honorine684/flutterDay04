@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 
 class Step1 extends StatefulWidget {
-  const Step1({super.key});
+  final Function(Map<String, dynamic>) onDataChanged;
+  const Step1({super.key, required this.onDataChanged});
 
   @override
-  State<Step1> createState() {
-    return Step1State();
-  }
+  State<Step1> createState() => Step1State();
 }
 
-
-
 class Step1State extends State<Step1> {
-  
   final formKey = GlobalKey<FormState>();
-  //controller de texte
   final username = TextEditingController();
   final email = TextEditingController();
   final passWord = TextEditingController();
@@ -22,8 +17,35 @@ class Step1State extends State<Step1> {
   final adresse = TextEditingController();
   bool showPassword = false;
   bool showConfirmPassword = false;
-  bool isLoading = false;
-  // verification email
+
+  void updateData() {
+    widget.onDataChanged({
+      'nom': username.text,
+      'email': email.text,
+      'adresse': adresse.text,
+      'password': passWord.text,
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Ajouter des écouteurs sur les champs pour déclencher `updateData` à chaque changement.
+    username.addListener(updateData);
+    email.addListener(updateData);
+    adresse.addListener(updateData);
+    passWord.addListener(updateData);
+  }
+
+  @override
+  void dispose() {
+    username.removeListener(updateData);
+    email.removeListener(updateData);
+    adresse.removeListener(updateData);
+    passWord.removeListener(updateData);
+    super.dispose();
+  }
+
   String? validateEmail(String? value) {
     const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
         r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
@@ -46,7 +68,6 @@ class Step1State extends State<Step1> {
       key: formKey,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // username
-
         Container(
           margin: const EdgeInsets.all(8),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -88,16 +109,17 @@ class Step1State extends State<Step1> {
             ),
           ),
           child: TextFormField(
-              controller: username,
-              decoration: const InputDecoration(
-                icon: Icon(Icons.email),
-                border: InputBorder.none,
-                hintText: "Email",
-              ),
-              validator: validateEmail),
+            controller: email,
+            decoration: const InputDecoration(
+              icon: Icon(Icons.email),
+              border: InputBorder.none,
+              hintText: "Email",
+            ),
+            validator: validateEmail,
+          ),
         ),
         // adresse
-       Container(
+        Container(
           margin: const EdgeInsets.all(8),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
@@ -117,8 +139,7 @@ class Step1State extends State<Step1> {
             ),
           ),
         ),
-
-        //password
+        // password
         Container(
           margin: const EdgeInsets.all(8),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -132,36 +153,21 @@ class Step1State extends State<Step1> {
           ),
           child: TextFormField(
             controller: passWord,
-            // pour verifier si le champ est bien rempli
-            validator: (value) {
-              if (value!.isEmpty) {
-                return "Mot de passe obligatoire";
-              } else if ((passWord.text).length < 6) {
-                return "Le mot de passe doit contenir plus de 6 caractères";
-              } else if (!RegExp(r'[a-zA-Z]').hasMatch(passWord.text)) {
-                return "Le mot de passe doit contenir des lettres";
-              } else if (!RegExp(r'\d').hasMatch(passWord.text)) {
-                return "Le mot de passe doit contenir des nombres";
-              } else if ((passWord.text).contains(' ')) {
-                return "Le mot de passe ne peut contenir d'espace";
-              }
-              return null;
-            },
             obscureText: !showPassword,
             decoration: InputDecoration(
-                icon: Icon(Icons.lock),
-                border: InputBorder.none,
-                hintText: "Password",
-                suffixIcon: IconButton(
-                  onPressed: () => setState(() {
-                    showPassword = !showPassword;
-                  }),
-                  icon: Icon(
-                      showPassword ? Icons.visibility : Icons.visibility_off),
-                )),
+              icon: Icon(Icons.lock),
+              border: InputBorder.none,
+              hintText: "Password",
+              suffixIcon: IconButton(
+                onPressed: () => setState(() {
+                  showPassword = !showPassword;
+                }),
+                icon: Icon(showPassword ? Icons.visibility : Icons.visibility_off),
+              ),
+            ),
           ),
         ),
-        //confirmpassword
+        // confirm password
         Container(
           margin: const EdgeInsets.all(8),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -175,28 +181,20 @@ class Step1State extends State<Step1> {
           ),
           child: TextFormField(
             controller: confirmPassword,
-            // pour verifier si le champ est bien rempli
-            validator: (value) {
-              if (value!.isEmpty) {
-                return "Confirmer votre mot de passe";
-              } else if (passWord.text != confirmPassword.text) {
-                return "Les mots de passe ne correspondent pas";
-              }
-              return null;
-            },
             obscureText: !showConfirmPassword,
             decoration: InputDecoration(
-                icon: Icon(Icons.lock),
-                border: InputBorder.none,
-                hintText: "Confirm Password",
-                suffixIcon: IconButton(
-                  onPressed: () => setState(() {
-                    showConfirmPassword = !showConfirmPassword;
-                  }),
-                  icon: Icon(showConfirmPassword
-                      ? Icons.visibility
-                      : Icons.visibility_off),
-                )),
+              icon: Icon(Icons.lock),
+              border: InputBorder.none,
+              hintText: "Confirm Password",
+              suffixIcon: IconButton(
+                onPressed: () => setState(() {
+                  showConfirmPassword = !showConfirmPassword;
+                }),
+                icon: Icon(showConfirmPassword
+                    ? Icons.visibility
+                    : Icons.visibility_off),
+              ),
+            ),
           ),
         ),
       ]),

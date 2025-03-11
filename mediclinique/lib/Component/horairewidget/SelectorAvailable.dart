@@ -2,39 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:mediclinique/JsonModels/Creneau.dart';
 import 'package:mediclinique/JsonModels/JourDisponibilite.dart';
 
-
 class Selectoravailable extends StatefulWidget {
   final Function(List<Jourdisponibilite>) onDaychanged;
-  const Selectoravailable(
-    {
+  const Selectoravailable({
     super.key,
     required this.onDaychanged
-    }
-    );
+  });
 
   @override
   State<Selectoravailable> createState() {
-   return SelectoravailableState();
+    return SelectoravailableState();
   }
-
 }
-class SelectoravailableState extends State<Selectoravailable>{
+
+class SelectoravailableState extends State<Selectoravailable> {
   final List<Jourdisponibilite> disponibilites = [
-    Jourdisponibilite(day: 'Lundi', creneaux: [],),
-    Jourdisponibilite(day: 'Mardi', creneaux: [],),
-    Jourdisponibilite(day: 'Mercredi', creneaux: [],),
-    Jourdisponibilite(day: 'Jeudi', creneaux: [],),
-    Jourdisponibilite(day: 'Vendredi', creneaux: [],),
-    Jourdisponibilite(day: 'Samedi', creneaux: [],),
-    Jourdisponibilite(day: 'Dimanche', creneaux: [],)
+    Jourdisponibilite(day: 'Lundi', creneaux: []),
+    Jourdisponibilite(day: 'Mardi', creneaux: []),
+    Jourdisponibilite(day: 'Mercredi', creneaux: []),
+    Jourdisponibilite(day: 'Jeudi', creneaux: []),
+    Jourdisponibilite(day: 'Vendredi', creneaux: []),
+    Jourdisponibilite(day: 'Samedi', creneaux: []),
+    Jourdisponibilite(day: 'Dimanche', creneaux: [])
   ];
+
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
       color: Colors.blue.shade100,
-       margin: const EdgeInsets.symmetric(vertical: 5),
-             child: Padding(
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      child: Padding(
         padding: const EdgeInsets.all(5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,44 +42,49 @@ class SelectoravailableState extends State<Selectoravailable>{
               style: TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 10),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: disponibilites.length,
-              itemBuilder: (context, index) {
-                final day = disponibilites[index];
-                return buildDay(day);
-              },
+            SizedBox(
+              height: 400, 
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: disponibilites.length,
+                itemBuilder: (context, index) {
+                  final day = disponibilites[index];
+                  return buildDay(day);
+                },
+              ),
             ),
-    ])));
+          ],
+        ),
+      ),
+    );
   }
 
-Widget buildDay(Jourdisponibilite jour){
-  return Column(
-    children: [
-      CheckboxListTile(
-        title: Text(jour.day),
-        value: jour.estDisponible, 
-        onChanged: (value){
-          setState(() {
-            jour.estDisponible = value ?? false;
-          });
-          // si le jour devient disponible et aucun creneau n'est choisi
-          if(jour.estDisponible && disponibilites.isEmpty){
-            jour.addCreneau(
-              Creneau(
-                start: const TimeOfDay(hour: 9, minute: 0), 
-                end: const TimeOfDay(hour: 17, minute: 0)
+  Widget buildDay(Jourdisponibilite jour) {
+    return Column(
+      children: [
+        CheckboxListTile(
+          title: Text(jour.day),
+          value: jour.estDisponible,
+          onChanged: (value) {
+            setState(() {
+              jour.estDisponible = value ?? false;
+            });
+            // si le jour devient disponible et aucun creneau n'est choisi
+            if (jour.estDisponible && jour.creneaux.isEmpty) {
+              jour.addCreneau(
+                Creneau(
+                  start: const TimeOfDay(hour: 9, minute: 0),
+                  end: const TimeOfDay(hour: 17, minute: 0),
                 ),
-            );
-          }
-        widget.onDaychanged(disponibilites);
-       },
-        activeColor: Colors.blue,
+              );
+            }
+            widget.onDaychanged(disponibilites);
+          },
+          activeColor: Colors.blue,
         ),
-        if(jour.estDisponible)...[
+        if (jour.estDisponible) ...[
           Padding(
-            padding: const EdgeInsets.only(right: 16,left: 16),
+            padding: const EdgeInsets.only(right: 16, left: 16),
             child: Column(
               children: [
                 for (int i = 0; i < jour.creneaux.length; i++)
@@ -97,17 +100,20 @@ Widget buildDay(Jourdisponibilite jour){
                         ),
                       );
                       widget.onDaychanged(disponibilites);
-                                        });
+                    });
                   },
                   icon: const Icon(Icons.add, size: 18),
                   label: const Text('Ajouter un créneau'),
                 ),
                 const Divider(),
               ],
-                
-  ))],
-            ]); 
-  } 
+            ),
+          )
+        ],
+      ],
+    );
+  }
+
   Widget buildCreneauRow(Jourdisponibilite jour, int indexCReneau) {
     final timeSlot = jour.creneaux[indexCReneau];
     return Row(
@@ -140,7 +146,8 @@ Widget buildDay(Jourdisponibilite jour){
       ],
     );
   }
- Future<void> selectTime(
+
+  Future<void> selectTime(
     BuildContext context,
     bool isStart,
     Jourdisponibilite jour,
@@ -178,14 +185,9 @@ Widget buildDay(Jourdisponibilite jour){
     }
   }
 
-  
-
-    String formatTimeOfDay(TimeOfDay timeOfDay) {
+  String formatTimeOfDay(TimeOfDay timeOfDay) {
     final hour = timeOfDay.hour.toString().padLeft(2, '0');
     final minute = timeOfDay.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
   }
-
 }
-  
-

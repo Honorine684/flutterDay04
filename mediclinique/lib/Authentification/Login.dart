@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mediclinique/Authentification/SignupClinique.dart';
 import 'package:mediclinique/Pages/HomeAdmin.dart';
 import 'package:mediclinique/Pages/HomeClinique.dart';
+import 'package:mediclinique/Pages/HomeMedecin.dart';
 import 'package:mediclinique/Services/Firebase/Auth.dart';
 
 class Login extends StatefulWidget {
@@ -31,7 +32,7 @@ class LoginState extends State<Login> {
     if (role == 'clinique') {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeClinique()));
     } else if (role == 'medecin') {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeClinique()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
     } else if (role == 'admin') {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()));
     } else {
