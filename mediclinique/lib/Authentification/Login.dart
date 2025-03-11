@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mediclinique/Authentification/RedirectionPage.dart';
 import 'package:mediclinique/Authentification/SignupClinique.dart';
-import 'package:mediclinique/Pages/HomeAdmin.dart';
-import 'package:mediclinique/Pages/HomeClinique.dart';
-import 'package:mediclinique/Pages/HomeMedecin.dart';
 import 'package:mediclinique/Services/Firebase/Auth.dart';
 
 class Login extends StatefulWidget {
@@ -25,40 +22,21 @@ class LoginState extends State<Login> {
       return 'clinique';
     }
   }
-  redirectionRole(BuildContext context) async {
-  User? user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    String role = await getUserRole(user.uid);
-    if (role == 'clinique') {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeClinique()));
-    } else if (role == 'medecin') {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
-    } else if (role == 'admin') {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()));
-    } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
-    }
-  } else {
-    setState(() {
-      isLoading = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Aucun utilisateur connecté")),
-    );
-  }
-}
-   Future<void> login() async {
+
+Future<void> login() async {
   setState(() {
     isLoading = true;
   });
   try {
     await Auth().SigninWithEmailAndPassword(email.text, password.text);
-    
-    await Future.delayed(Duration(milliseconds: 500));
-    
-    await redirectionRole(context);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const Redirectionpage()),
+    );
   } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Erreur de connexion: $e")));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Erreur de connexion: $e")),
+    );
   } finally {
     setState(() {
       isLoading = false;

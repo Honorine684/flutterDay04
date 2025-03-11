@@ -59,12 +59,12 @@ class Step3State extends State<Step3> {
       print("Erreur lors du chargement des specialites: $error");
     });
   }
-
-  void onSpecialiteChanged(Specialite newSpecialite) {
-    setState(() {
-      selectedSpecialite = newSpecialite;
-    });
-  }
+void onSpecialiteChanged(Specialite? newSpecialite) {
+  setState(() {
+    selectedSpecialite = newSpecialite;
+  });
+  updateData(); // Mettre à jour les données immédiatement après la sélection
+}
 
   @override
   void initState() {
@@ -89,42 +89,41 @@ class Step3State extends State<Step3> {
 80010020030
       */
         // specialite medicale
-        Container(
-          margin: const EdgeInsets.all(8),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.teal.shade700,
-                width: 2.0,
-              ),
+              Container(
+        margin: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Colors.teal.shade700,
+              width: 2.0,
             ),
-          ),
-          child: DropdownButtonFormField<Specialite>(
-            decoration: const InputDecoration(
-              icon: Icon(Icons.store),
-              border: InputBorder.none,
-              hintText: "Sélectionnez une specialite",
-            ),
-            value: selectedSpecialite,
-            isExpanded: true,
-            icon: const Icon(Icons.keyboard_arrow_down),
-            items: specialites.map((categorie) {
-              return DropdownMenuItem<Specialite>(
-                value: categorie,
-                child: Text(categorie.libelle),
-              );
-            }).toList(),
-            onChanged: (Specialite? newValue) async {
-              setState(() {
-                if (newValue != null) {
-                  onSpecialiteChanged(newValue);
-                }
-              });
-            },
           ),
         ),
-      ],
-    );
-  }
+        child: DropdownButtonFormField<Specialite>(
+          decoration: const InputDecoration(
+            icon: Icon(Icons.store),
+            border: InputBorder.none,
+            hintText: "Sélectionnez une specialite",
+          ),
+          value: selectedSpecialite,
+          isExpanded: true,
+          icon: const Icon(Icons.keyboard_arrow_down),
+          items: specialites.map((categorie) {
+            return DropdownMenuItem<Specialite>(
+              value: categorie,
+              child: Text(categorie.libelle),
+            );
+          }).toList(),
+          onChanged: (Specialite? newValue) {
+            setState(() {
+              selectedSpecialite = newValue;
+            });
+            updateData(); // Mettre à jour les données immédiatement après la sélection
+          },
+        ),
+      ),
+    ],
+  );
+}
 }

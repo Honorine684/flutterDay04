@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediclinique/Authentification/SignupMedecin.dart';
-import 'package:mediclinique/Pages/PageProfileClinique.dart';
+import 'package:mediclinique/Pages/PageProfileMedecin.dart';
 
 
 
@@ -49,7 +49,7 @@ class _HomePage extends State<HomePage> {
                     ),
                     child:
                         IconButton(onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> const PageProfile()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> const PageProfileMedecin()));
                         }, icon: Icon(Icons.person)),
                   )
           ],

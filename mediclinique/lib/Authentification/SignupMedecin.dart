@@ -109,7 +109,7 @@ class SignupmedecinState extends State<Signupmedecin> {
                 if (initialStep < steps.length - 1) {
                   initialStep = initialStep + 1;
                 } else {
-                  // Lorsque l'utilisateur arrive à la dernière étape, il voit "Confirmer"
+                  
                   print("Données collectées: $medecinData");
                 }
               });
@@ -123,36 +123,45 @@ class SignupmedecinState extends State<Signupmedecin> {
                 }
               });
             },
-            controlsBuilder: (BuildContext context, ControlsDetails details) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                      controlsBuilder: (BuildContext context, ControlsDetails details) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Bouton Annuler
+                  if (initialStep > 0) // Afficher le bouton Annuler seulement si ce n'est pas la première étape
                     ElevatedButton(
-                      onPressed: initialStep == steps.length - 1
-                          ? () async {
-                            
-                              await inscrireMedecin();
-                              print('voila $medecinData');
-                              print("Médecin inscrit avec succès!");
-                            }
-                          : details.onStepContinue,
+                      onPressed: details.onStepCancel, // Utiliser details.onStepCancel pour revenir à l'étape précédente
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       ),
                       child: Text(
-                        initialStep == steps.length - 1
-                            ? 'Confirmer'
-                            : 'Continuer',
+                        'Annuler',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
-                  ],
-                ),
-              );
-            },
+                  // Bouton Continuer ou Confirmer
+                  ElevatedButton(
+                    onPressed: initialStep == steps.length - 1
+                        ? () async {
+                            await inscrireMedecin();
+                            print('voila $medecinData');
+                            print("Médecin inscrit avec succès!");
+                          }
+                        : details.onStepContinue,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    child: Text(
+                      initialStep == steps.length - 1 ? 'Confirmer' : 'Continuer',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
           ),
         ]),
       ),
@@ -166,22 +175,20 @@ Future<void> inscrireMedecin() async {
     String email = medecinData['email'] ?? '';
     String adresse = medecinData['adresse'] ?? '';
     String password = medecinData['password'] ?? '';
-    
-    // Ces deux lignes sont importantes!
+   
     String dateOfNaiss = medecinData['dateOfNaiss'] ?? '';
-    String sexe = medecinData['gender'] ?? ''; // Attention ici !
+    String sexe = medecinData['gender'] ?? '';
     
     String rpps = medecinData['rpps'] ?? '';
     String photo = medecinData['photo'] ?? '';
     String specialite = medecinData['specialite'] ?? '';
     List<Jourdisponibilite> jours = medecinData['doctorAvailability'] ?? [];
 
-    // Pour le débogage, ajoutez ceci
+    
     print("Données qui seront envoyées à Firestore:");
     print("dateOfNaiss: $dateOfNaiss");
     print("sexe: $sexe");
     
-    // Appel de la fonction pour envoyer à Firestore
     await Auth().inscrireMedecin(
       nom,
       email,

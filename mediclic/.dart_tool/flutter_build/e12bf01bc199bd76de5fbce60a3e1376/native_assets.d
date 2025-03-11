@@ -1,0 +1,1 @@
+ /home/honorine/Bureau/dclic/flutterDay04/mediclic/.dart_tool/flutter_build/e12bf01bc199bd76de5fbce60a3e1376/native_assets.yaml: 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mediclinique/Component/Step2Widget/DatePicker.dart';
 import 'package:mediclinique/Component/Step2Widget/genreChoice.dart';
 import 'package:mediclinique/Component/Step2Widget/photo.dart';
-import 'package:intl/intl.dart'; // Importez le package intl pour le formatage de la date
+import 'package:intl/intl.dart'; 
 
 class Step2 extends StatefulWidget {
   const Step2({super.key, required this.onDataChanged});
@@ -14,8 +14,8 @@ class Step2 extends StatefulWidget {
 }
 
 class _Step2State extends State<Step2> {
-  DateTime? selectedDateObj; // Stockez l'objet DateTime
-  String? selectedDate; // La date formatée en string
+  DateTime? selectedDateObj; 
+  String? selectedDate; 
   String selectedGender = 'Femme';
   String? photoPath;
 
@@ -67,12 +67,12 @@ class _Step2State extends State<Step2> {
         ),
         SizedBox(height: 20),
         // Photo
-        Photo(
-          onPhotoChanged: (String? path) {
+         Photo(
+          onPhotoChanged: (String? base64Image) {
             setState(() {
-              photoPath = path;
+              photoPath = base64Image; 
             });
-            sendDataToParent(); // Envoie des données après modification de la photo
+            sendDataToParent(); 
           },
         ),
       ],

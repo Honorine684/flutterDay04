@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:convert'; 
 
 class Photo extends StatefulWidget {
   const Photo({super.key, required this.onPhotoChanged});
@@ -13,6 +14,7 @@ class Photo extends StatefulWidget {
 
 class PhotoState extends State<Photo> {
   File? image;
+  String? base64Image;
 
   Future pickImage() async {
     final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -20,10 +22,17 @@ class PhotoState extends State<Photo> {
       return;
     }
     final imageTemporary = File(pickedImage.path);
+
+    // Encoder l'image en base64
+    final bytes = await imageTemporary.readAsBytes();
+    final base64 = base64Encode(bytes);
+
     setState(() {
       image = imageTemporary;
+      base64Image = base64; 
     });
-    widget.onPhotoChanged(image?.path); // Envoie du chemin de l'image au parent
+
+    widget.onPhotoChanged(base64Image); 
   }
 
   @override

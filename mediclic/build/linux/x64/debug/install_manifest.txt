@@ -1,0 +1,15 @@
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/mediclic
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/icudtl.dat
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/lib/libflutter_linux_gtk.so
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/FontManifest.json
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/version.json
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/kernel_blob.bin
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/AssetManifest.json
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/assets/image/pilules.png
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/assets/image/hopital.png
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/assets/image/medecin.png
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/shaders/ink_sparkle.frag
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES.Z
+/home/honorine/Bureau/dclic/flutterDay04/mediclic/build/linux/x64/debug/bundle/data/flutter_assets/AssetManifest.bin
