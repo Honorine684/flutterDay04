@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 
 class Step1 extends StatefulWidget {
+  const Step1({super.key});
+
   @override
   State<Step1> createState() {
     return Step1State();
   }
 }
 
+
+
 class Step1State extends State<Step1> {
+  
   final formKey = GlobalKey<FormState>();
   //controller de texte
   final username = TextEditingController();
   final email = TextEditingController();
   final passWord = TextEditingController();
   final confirmPassword = TextEditingController();
-   final adresse = TextEditingController();
+  final adresse = TextEditingController();
   bool showPassword = false;
   bool showConfirmPassword = false;
   bool isLoading = false;
@@ -92,7 +97,7 @@ class Step1State extends State<Step1> {
               validator: validateEmail),
         ),
         // adresse
-                Container(
+       Container(
           margin: const EdgeInsets.all(8),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
@@ -112,29 +117,7 @@ class Step1State extends State<Step1> {
             ),
           ),
         ),
-        // sexe
-        // date de naissance
-        //photo(optionnel)
-        Container(
-          margin: const EdgeInsets.all(8),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.blue,
-                width: 2.0,
-              ),
-            ),
-          ),
-          child: TextFormField(
-              controller: username,
-              decoration: const InputDecoration(
-                icon: Icon(Icons.email),
-                border: InputBorder.none,
-                hintText: "Email",
-              ),
-              validator: validateEmail),
-        ),
+
         //password
         Container(
           margin: const EdgeInsets.all(8),

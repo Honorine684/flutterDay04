@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mediclinique/Authentification/Login.dart';
-import 'package:mediclinique/CRUDPage/AjoutClinique.dart';
 import 'package:mediclinique/CRUDPage/AjoutSpecialite.dart';
 import 'package:mediclinique/Services/Firebase/Auth.dart';
 
@@ -77,7 +76,7 @@ class HomeState extends State<Home>{
                       ),
                       child: IconButton(
                         onPressed: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> const Ajoutclinique()));
+                          //Navigator.push(context, MaterialPageRoute(builder: (context)=> const Ajoutclinique()));
                         }, 
                         icon: Icon(Icons.add,color: Colors.blue,)),
                     ),
@@ -141,7 +140,7 @@ class HomeState extends State<Home>{
                       ),
                       child: IconButton(
                         onPressed: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> const Ajoutclinique()));
+                        //  Navigator.push(context, MaterialPageRoute(builder: (context)=> const Ajoutclinique()));
                         }, 
                         icon: Icon(Icons.add,color: Colors.blue,)),
                     ),

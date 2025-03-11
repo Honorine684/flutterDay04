@@ -1,28 +1,33 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mediclinique/Authentification/Login.dart';
-import 'package:mediclinique/Pages/HomeAdmin.dart';
+import 'package:mediclinique/JsonModels/JourDisponibilite.dart';
+import 'package:mediclinique/Pages/HomeClinique.dart';
 import 'package:mediclinique/Services/Firebase/Auth.dart';
 
-class Signup extends StatefulWidget {
-  const Signup({super.key});
+class Signupclinique extends StatefulWidget {
+  const Signupclinique({super.key});
+
+  
 
   @override
-  State<Signup> createState() {
-    return _SignupState();
+  State<Signupclinique> createState() {
+    return SignupcliniqueState();
   }
 }
 
-class _SignupState extends State<Signup> {
+class SignupcliniqueState extends State<Signupclinique> {
   final formKey = GlobalKey<FormState>();
   //controller de texte
   final username = TextEditingController();
   final email = TextEditingController();
   final passWord = TextEditingController();
+  final adresse = TextEditingController();
   final confirmPassword = TextEditingController();
   bool showPassword = false;
   bool showConfirmPassword = false;
   bool isLoading = false;
+  List<Jourdisponibilite> doctorAvailability = []; 
   // verification email
   String? validateEmail(String? value) {
     const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
@@ -47,8 +52,7 @@ class _SignupState extends State<Signup> {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          // je met tout dans un form pour pouvoir verifier si mes elements sont vides ou pas
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Form(
             key: formKey,
             child: Column(
@@ -70,7 +74,7 @@ class _SignupState extends State<Signup> {
                 SizedBox(
                   height: hauteurEcran * 0.02,
                 ),
-                // username
+                // Nom clinique
                 Container(
                   width: largeurEcran * 0.88,
                   height: 50,
@@ -85,14 +89,14 @@ class _SignupState extends State<Signup> {
                     // pour verifier si le champ est bien rempli
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return "Username est obligatoire";
+                        return "Nom clinique est obligatoire";
                       }
                       return null;
                     },
                     decoration: InputDecoration(
                         icon: Icon(Icons.person),
                         border: InputBorder.none,
-                        hintText: "Username"),
+                        hintText: "Nom clinique"),
                   ),
                 ),
                 // email
@@ -115,6 +119,26 @@ class _SignupState extends State<Signup> {
                         hintText: "Email"),
                   ),
                 ),
+                // adresse
+                Container(
+                  width: largeurEcran * 0.88,
+                  height: 50,
+                  margin: EdgeInsets.all(8),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.blue.shade100,
+                  ),
+                  child: TextFormField(
+                    controller: adresse,
+                    
+                    decoration: InputDecoration(
+                        icon: Icon(Icons.email),
+                        border: InputBorder.none,
+                        hintText: "Adresse(optionnel)"),
+                  ),
+                ),
+            
                 //password
                 Container(
                   width: largeurEcran * 0.88,
@@ -214,10 +238,13 @@ class _SignupState extends State<Signup> {
                             if (formKey.currentState!.validate()) {
                               // Logique de connexion
                               try {
-                                Auth().createUserWithEmailAndPassword(
+                                Auth().inscrireClinique(
                                   username.text,
+                                  adresse.text,
                                   email.text,
                                   passWord.text,
+                                  
+                                  
                                 );
                                 setState(() {
                                   isLoading = false;
@@ -240,7 +267,7 @@ class _SignupState extends State<Signup> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const Home()));
+                                      builder: (context) => const HomeClinique()));
                             }
                           },
                     child: isLoading

@@ -10,4 +10,9 @@ class Firestoreservice {
       'timestamp':Timestamp.now()
     });
   }
+Stream<QuerySnapshot> getSpecialite(){
+  final specialiteStream = specialite.orderBy('timestamp',descending: true).snapshots();
+  return specialiteStream;
+}
+  
 }

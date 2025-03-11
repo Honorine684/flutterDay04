@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mediclinique/Authentification/SignupMedecin.dart';
-import 'package:mediclinique/Pages/Home.dart';
+import 'package:mediclinique/Authentification/SignupClinique.dart';
+import 'package:mediclinique/Pages/HomeAdmin.dart';
+import 'package:mediclinique/Pages/HomeClinique.dart';
 import 'package:mediclinique/Services/Firebase/Auth.dart';
 
 class Login extends StatefulWidget {
@@ -14,11 +16,61 @@ class Login extends StatefulWidget {
 }
 
 class LoginState extends State<Login> {
+    Future<String> getUserRole(String userId)async{
+    DocumentSnapshot userRef = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if(userRef.exists){
+      return userRef['role'];
+    }else{
+      return 'clinique';
+    }
+  }
+  redirectionRole(BuildContext context) async {
+  User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    String role = await getUserRole(user.uid);
+    if (role == 'clinique') {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeClinique()));
+    } else if (role == 'medecin') {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeClinique()));
+    } else if (role == 'admin') {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()));
+    } else {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
+    }
+  } else {
+    setState(() {
+      isLoading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Aucun utilisateur connecté")),
+    );
+  }
+}
+   Future<void> login() async {
+  setState(() {
+    isLoading = true;
+  });
+  try {
+    await Auth().SigninWithEmailAndPassword(email.text, password.text);
+    
+    await Future.delayed(Duration(milliseconds: 500));
+    
+    await redirectionRole(context);
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Erreur de connexion: $e")));
+  } finally {
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
   final formkey = GlobalKey<FormState>();
   final email = TextEditingController();
   final password = TextEditingController();
   bool isLoading = false;
   bool showpassword = false;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +78,7 @@ class LoginState extends State<Login> {
     final hauteurEcran = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        //automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -131,34 +183,11 @@ class LoginState extends State<Login> {
                         : () async {
                             setState(() {
                               isLoading = true;
+                          
                             });
                             if (formkey.currentState!.validate()) {
                               // Logique de connexion
-                              try {
-                                Auth().SigninWithEmailAndPassword(
-                                    email.text, password.text);
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              } on FirebaseAuthException catch (e) {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                                // message d'erreur
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text("${e.message}"),
-                                    behavior: SnackBarBehavior.floating,
-                                    backgroundColor: Color(0xffE9494F),
-                                    showCloseIcon: true,
-                                  ),
-                                );
-                              }
-                              // naviguer vers la page home
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const Home()));
+                             login();
                             }
                           },
                     child: isLoading
@@ -172,10 +201,11 @@ class LoginState extends State<Login> {
                   ),
                 ),
                 //bouton d'inscription
-
+              
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    
                     Text(
                       "Pas de compte?",
                       style: TextStyle(fontSize: largeurEcran * 0.03),
@@ -190,11 +220,20 @@ class LoginState extends State<Login> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>const Signupmedecin()));
+                                builder: (context) =>const Signupclinique()));
                       }),
                     )
                   ],
-                ),
+                ) /*ElevatedButton(
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> const Getstarted()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                          
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          ),
+                          child: Text('Retour', style: TextStyle(fontSize: 16)),
+                        ),*/
               ],
             )),
       ),

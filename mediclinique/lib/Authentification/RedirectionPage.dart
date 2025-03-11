@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mediclinique/Authentification/Login.dart';
-import 'package:mediclinique/Pages/Home.dart';
+import 'package:mediclinique/Pages/HomeAdmin.dart';
 import 'package:mediclinique/Services/Firebase/Auth.dart';
 
 class Redirectionpage extends StatefulWidget{

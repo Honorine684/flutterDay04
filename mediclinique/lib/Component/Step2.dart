@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:mediclinique/Component/Step2Widget/DatePicker.dart';
+import 'package:mediclinique/Component/Step2Widget/genreChoice.dart';
+import 'package:mediclinique/Component/Step2Widget/photo.dart';
 
-class Step2 extends StatefulWidget{
+class Step2 extends StatelessWidget{
   const Step2({super.key});
 
   @override
-  State<Step2> createState() {
-   return Step2State();
-  }
-
-}
-class Step2State extends State<Step2>{
-  @override
   Widget build(BuildContext context) {
-   return Scaffold(
-    /* numeero rpps(verifier validite depuis bddd),
-    specialites medicales
-    etablissements d'exercics
-    horaires de disponibilite
-    */
+  return Column(
+    children: [
+      // date de naissance
+      DatePicker(),
+      SizedBox(height: 20,),
+      //sexe
+      Genrechoice(),
+      SizedBox(height: 20,),
+      Photo(),
 
-   );
+
+    ],
+  );
+    
+    
+    
+
+   
   }
+
   
 }
