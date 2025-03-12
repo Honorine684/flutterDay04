@@ -23,7 +23,7 @@ class PagedetailsdoctorState extends State<Pagedetailsdoctor>{
     body: Center(
       child: GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>  Prisederendezvous()));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>  Prisederendezvous(doctor: widget.doctor,)));
         },
         child: Text("prendre rendez-vous"),
       ),
