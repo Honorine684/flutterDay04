@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mediclic/JsonModels/Doctor.dart';
 import 'package:mediclic/JsonModels/Specialite.dart';
+import 'package:mediclic/Pages/PageDetailsDoctor.dart';
 import 'package:mediclic/Services/Firebase/FirestoresServices.dart';
 import 'package:mediclic/cardio.dart';
 
@@ -51,12 +53,87 @@ class AccueilState extends State<Accueil> {
   int indexActuel = 0;
   int indexSelectionne = 0;
   List<Specialite> specialites = [];
+  String? selectedSpecialite;
+  List<Doctor> doctors = [];
 
   @override
   void initState() {
     super.initState();
     loadSpecialite();
   }
+
+void loadDoctorsBySpecialite(String specialite) {
+  print("Chargement des médecins pour la spécialité: $specialite");
+  Firestoreservices().getDoctor(specialite).listen((snapshot) {
+    List<Doctor> doctorList = [];
+    
+    // Compteur pour savoir quand tous les médecins sont chargés
+    int doctorsToProcess = snapshot.docs.length;
+    int doctorsProcessed = 0;
+    
+    if (doctorsToProcess == 0) {
+      setState(() {
+        doctors = []; // Aucun médecin trouvé
+        print("Aucun médecin trouvé pour cette spécialité");
+      });
+      return;
+    }
+    
+    for (var doc in snapshot.docs) {
+      try {
+        // Extraire les données de base du médecin
+        Map<String, dynamic> doctorData = doc.data() as Map<String, dynamic>;
+        
+        // Récupérer les créneaux du médecin
+        Firestoreservices().getCreneauxForDoctor(doc.id).listen((creneauxSnapshot) {
+          List<Map<String, dynamic>> creneauxList = [];
+          
+          // Convertir les créneaux en Map
+          for (var creneauDoc in creneauxSnapshot.docs) {
+            creneauxList.add(creneauDoc.data() as Map<String, dynamic>);
+          }
+          
+          // Créer l'objet Doctor avec toutes les données
+          Doctor doctor = Doctor(
+            id: doc.id,
+            nom: doctorData['nom'] ?? 'Sans nom',
+            genre: doctorData['genre'] ?? 'Non spécifié',
+            photo: doctorData['photo'] ?? '',
+            specialite: doctorData['specialite'] ?? specialite,
+            creneaux: creneauxList
+          );
+          
+          doctorList.add(doctor);
+          doctorsProcessed++;
+          
+          // Mettre à jour l'état quand tous les médecins sont chargés
+          if (doctorsProcessed == doctorsToProcess) {
+            setState(() {
+              doctors = doctorList;
+              print("Médecins chargés: ${doctorList.length}");
+            });
+          }
+        }, onError: (error) {
+          print("Erreur lors du chargement des créneaux pour ${doc.id}: $error");
+          doctorsProcessed++;
+          
+          // Même en cas d'erreur, on vérifie si tous les médecins ont été traités
+          if (doctorsProcessed == doctorsToProcess) {
+            setState(() {
+              doctors = doctorList;
+              print("Médecins chargés: ${doctorList.length}");
+            });
+          }
+        });
+      } catch (e) {
+        print("Erreur sur un document médecin: $e");
+        doctorsProcessed++;
+      }
+    }
+  }, onError: (error) {
+    print("Erreur lors du chargement des médecins: $error");
+  });
+}
 
   void loadSpecialite() {
     print("Démarrage du chargement des spécialités...");
@@ -288,7 +365,12 @@ class AccueilState extends State<Accueil> {
                     itemBuilder: (context, index) => GestureDetector(
                       onTap: () {
                         setState(() {
-                          indexSelectionne = index;
+                          indexSelectionne =
+                              index; // Mettre à jour l'index sélectionné
+                          selectedSpecialite = specialites[index]
+                              .libelle; // Récupérer l'ID de la spécialité
+                          loadDoctorsBySpecialite(
+                              selectedSpecialite!); // Charger les médecins
                         });
                       },
                       child: Container(
@@ -414,7 +496,7 @@ class AccueilState extends State<Accueil> {
                                   child: Container(
                                       width: largeurEcran,
                                       decoration: BoxDecoration(
-                                          color: Colors.grey.shade100,
+                                          color: Colors.blue.shade100,
                                           borderRadius:
                                               BorderRadius.circular(15)),
                                       child: Column(
@@ -439,7 +521,7 @@ class AccueilState extends State<Accueil> {
               SizedBox(height: 20),
 
               // Liste des médecins disponibles avec images (commentée)
-                            Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 15, right: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -454,6 +536,135 @@ class AccueilState extends State<Accueil> {
                   ],
                 ),
               ),
+              SizedBox(
+                height: 10,
+              ),
+              Padding(
+                  padding: EdgeInsets.only(right: 15, left: 15),
+                  child: SizedBox(
+                    height: hauteurEcran * 0.30,
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: doctors.length,
+                        itemBuilder: (context, index) => Container(
+                            margin: EdgeInsets.only(right: largeurEcran * 0.05),
+                            width: largeurEcran * 0.55,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(
+                                        0.2), //rend l'ombre semi transparente
+                                    spreadRadius: 2, //expansion de l'omnbre
+                                    blurRadius: 5, //controle le flou de l'ombre
+                                    offset: Offset(
+                                        0, 3), //decale l'ombre de 3pixels
+                                  )
+                                ]),
+                            child: Column(children: [
+                              Expanded(
+                                  flex: 2,
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(15),
+                                                topRight: Radius.circular(15)),
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                    doctors[index].photo),
+                                                fit: BoxFit.cover)),
+                                      ),
+                                      Positioned(
+                                          top: 10,
+                                          right: 10,
+                                          child: Container(
+                                            padding: EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.favorite,
+                                              size: largeurEcran * 0.05,
+                                              color: Colors.pink,
+                                            ),
+                                          ))
+                                    ],
+                                  )),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                    width: largeurEcran,
+                                    decoration: BoxDecoration(
+                                        color: Colors.blue.shade100,
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        top: 15,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                right: 15, left: 15),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  doctors[index].nom,
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          largeurEcran * 0.04,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                right: 15, left: 15),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  doctors[index].specialite,
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.black87),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                 Pagedetailsdoctor(doctor:doctors[index])));
+                                                  },
+                                                  child: Text(
+                                                    "Voir plus",
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.blue,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )),
+                              )
+                            ]))),
+                  )),
+
               SizedBox(height: 50),
             ],
           ),
