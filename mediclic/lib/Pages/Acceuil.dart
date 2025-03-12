@@ -97,9 +97,11 @@ void loadDoctorsBySpecialite(String specialite) {
           Doctor doctor = Doctor(
             id: doc.id,
             nom: doctorData['nom'] ?? 'Sans nom',
-            genre: doctorData['genre'] ?? 'Non spécifié',
+            genre: doctorData['gender'] ?? 'Non spécifié',
             photo: doctorData['photo'] ?? '',
             specialite: doctorData['specialite'] ?? specialite,
+            description: doctorData['description'] ?? "Sans description",
+            adresse: doctorData['adresse'] ?? "sans adresse",
             creneaux: creneauxList
           );
           
@@ -269,7 +271,6 @@ void loadDoctorsBySpecialite(String specialite) {
               ),
               SizedBox(height: 20),
 
-              // PageView avec conseils de santé dans un seul Container
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 height: 150,
@@ -644,7 +645,7 @@ void loadDoctorsBySpecialite(String specialite) {
                                                         context,
                                                         MaterialPageRoute(
                                                             builder: (context) =>
-                                                                 Pagedetailsdoctor(doctor:doctors[index])));
+                                                                 DetailPageDoctor(doctor:doctors[index])));
                                                   },
                                                   child: Text(
                                                     "Voir plus",
