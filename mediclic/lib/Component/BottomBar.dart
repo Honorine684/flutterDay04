@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mediclic/Pages/Acceuil.dart';
+import 'package:mediclic/Pages/DossierMedical.dart';
+import 'package:mediclic/Pages/Profile.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 
 class Bottombar extends StatefulWidget {
@@ -26,7 +28,9 @@ class  BottombarState extends State<Bottombar> {
       physics: NeverScrollableScrollPhysics(),       
       controller: pageController,
       children: [
-        Accueil()
+        Accueil(),
+        DossierMedical(),
+        Profile()
       ],
        
       ),
@@ -47,8 +51,11 @@ class  BottombarState extends State<Bottombar> {
             outlinedIcon: Icons.bookmark_border_rounded,
           ),
           BarItem(
-              filledIcon: Icons.favorite_rounded,
-              outlinedIcon: Icons.favorite_border_rounded),
+              filledIcon: Icons.person,
+              outlinedIcon: Icons.person_2_rounded),
+          BarItem(
+              filledIcon: Icons.health_and_safety,
+              outlinedIcon: Icons.health_and_safety_rounded),    
         ],
       ),
     );
