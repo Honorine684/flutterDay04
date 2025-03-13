@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'dart:convert';
 
 class Photo extends StatefulWidget {
   const Photo({super.key, required this.onPhotoChanged});
-  
+
   final void Function(String? path) onPhotoChanged; // Callback
-  
+
   @override
   State<Photo> createState() => PhotoState();
 }
@@ -15,24 +16,28 @@ class Photo extends StatefulWidget {
 class PhotoState extends State<Photo> {
   File? image;
   String? base64Image;
-  
-  Future pickImage() async {
+
+  Future<void> pickImage() async {
     final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedImage == null) {
       return;
     }
-    
-    final imageTemporary = File(pickedImage.path);
-    
-    // Vérifier la taille de l'image (8 Mo = 8 * 1024 * 1024 octets)
-    final fileSize = await imageTemporary.length();
+
+    // Compresser l'image avant de l'encoder
+    final compressedImage = await compressImage(File(pickedImage.path));
+    if (compressedImage == null) {
+      return;
+    }
+
+    // Vérifier la taille de l'image compressée (8 Mo = 8 * 1024 * 1024 octets)
+    final fileSize = await compressedImage.length();
     if (fileSize > 8 * 1024 * 1024) {
       // Afficher une alerte si l'image dépasse 8 Mo
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: Text('Image trop volumineuse'),
-          content: Text('L\'image sélectionnée dépasse 8 Mo. Veuillez choisir une image moins volumineuse.'),
+          content: Text('L\'image sélectionnée dépasse 8 Mo même après compression. Veuillez choisir une image moins volumineuse.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -50,19 +55,40 @@ class PhotoState extends State<Photo> {
       );
       return;
     }
-    
-    // Encoder l'image en base64
-    final bytes = await imageTemporary.readAsBytes();
+
+    // Encoder l'image compressée en base64
+    final bytes = await compressedImage.readAsBytes();
     final base64 = base64Encode(bytes);
-    
+
     setState(() {
-      image = imageTemporary;
+      image = compressedImage;
       base64Image = base64;
     });
-    
+
     widget.onPhotoChanged(base64Image);
   }
-  
+
+  Future<File?> compressImage(File file) async {
+    try {
+      final result = await FlutterImageCompress.compressWithFile(
+        file.absolute.path,
+        quality: 50, // Réduire la qualité à 50%
+      );
+
+      if (result == null) {
+        return null;
+      }
+
+      // Sauvegarder l'image compressée dans un fichier temporaire
+      final compressedFile = File('${file.path}_compressed.jpg');
+      await compressedFile.writeAsBytes(result);
+      return compressedFile;
+    } catch (e) {
+      print("Erreur lors de la compression de l'image: $e");
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
