@@ -61,5 +61,33 @@ Future<void> createUserWithEmailAndPassword( {
   Future<void> logout()async{
     await _firebaseAuth.signOut();
   }
+
+  Future<String?> getCurrentUserName() async {
+  final User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+        
+    // Vérifier si le document existe et contient le champ 'name'
+    if (userDoc.exists && userDoc.data() != null) {
+      // Convertir en Map pour pouvoir utiliser containsKey
+      final userData = userDoc.data() as Map<String, dynamic>;
+      
+      // Vérifier si le champ 'name' existe
+      if (userData.containsKey('name')) {
+        return userData['name'] as String;
+      } else if (userData.containsKey('nom')) {
+        // Alternative: essayer avec 'nom' si 'name' n'existe pas
+        return userData['nom'] as String;
+      } else {
+        // Utiliser l'email si aucun nom n'est trouvé
+        return user.email ?? "Utilisateur";
+      }
+    }
+  }
+  return null;
+}
   
 }

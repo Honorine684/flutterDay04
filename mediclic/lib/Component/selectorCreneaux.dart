@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CreneauxSelector extends StatefulWidget {
   final List<Map<String, dynamic>> creneaux;
-  final Function(String)? onCreneauSelected;
+  final Function(String, String)? onCreneauSelected;
 
   const CreneauxSelector({
     super.key,
@@ -63,16 +63,22 @@ class CreneauxSelectorState extends State<CreneauxSelector> {
     }
     
     // Générer les heures disponibles à partir des créneaux
-    List<String> heuresDisponibles = [];
+    List<Map<String, dynamic>> heuresDisponibles = [];
     for (var creneau in creneauxJour) {
       int startHour = creneau["startHour"] ?? 9;
       int startMinute = creneau["startMinute"] ?? 0;
       int endHour = creneau["endHour"] ?? 17;
       int endMinute = creneau["endMinute"] ?? 0;
       
-      heuresDisponibles.addAll(
-        generateHourSlots(startHour, startMinute, endHour, endMinute)
-      );
+      List<String> heures = generateHourSlots(startHour, startMinute, endHour, endMinute);
+      
+      // Conserver l'id du créneau avec chaque heure générée
+      for (String heure in heures) {
+        heuresDisponibles.add({
+          'heure': heure,
+          'id': creneau["id"] ?? '',  // S'assurer que l'ID existe
+        });
+      }
     }
 
     return Column(
@@ -97,7 +103,7 @@ class CreneauxSelectorState extends State<CreneauxSelector> {
               });
               
               // Débogage
-              debugPrint("Heures disponibles pour $jour: $heuresDisponibles");
+              debugPrint("Heures disponibles pour $jour: ${heuresDisponibles.map((e) => e['heure']).toList()}");
             } : null, // Désactiver le bouton si le jour n'est pas disponible
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -132,7 +138,9 @@ class CreneauxSelectorState extends State<CreneauxSelector> {
                   child: Wrap(
                     spacing: 8.0,
                     runSpacing: 8.0,
-                    children: heuresDisponibles.map((heure) {
+                    children: heuresDisponibles.map((creneauInfo) {
+                      final heure = creneauInfo['heure'] as String;
+                      final id = creneauInfo['id'] as String;
                       final creneauString = "$jour à $heure";
                       final isSelected = selectedCreneau == creneauString;
                       
@@ -148,7 +156,9 @@ class CreneauxSelectorState extends State<CreneauxSelector> {
                           });
                           
                           if (widget.onCreneauSelected != null) {
-                            widget.onCreneauSelected!(creneauString);
+                            // Utiliser l'ID associé à ce créneau spécifique
+                            widget.onCreneauSelected!(id, creneauString);
+                            debugPrint("Créneau sélectionné: $creneauString avec ID: $id");
                           }
                         },
                         child: Text(heure),
