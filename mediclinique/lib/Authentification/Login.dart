@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mediclinique/Authentification/RedirectionPage.dart';
-import 'package:mediclinique/Authentification/SignupClinique.dart';
+import 'package:mediclinique/Pages/HomeClinique.dart';
 import 'package:mediclinique/Services/Firebase/Auth.dart';
 
 class Login extends StatefulWidget {
@@ -199,20 +199,11 @@ Future<void> login() async {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>const Signupclinique()));
+                                builder: (context) =>const HomeClinique()));
                       }),
                     )
                   ],
-                ) /*ElevatedButton(
-                          onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=> const Getstarted()));
-                          },
-                          style: ElevatedButton.styleFrom(
-                          
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          ),
-                          child: Text('Retour', style: TextStyle(fontSize: 16)),
-                        ),*/
+                ) 
               ],
             )),
       ),

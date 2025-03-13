@@ -21,13 +21,15 @@ class Step3State extends State<Step3> {
     widget.onDataChanged({
       'rpps': controller.text, // Envoi de la valeur RPPS
       'specialite':
-          selectedSpecialite?.libelle, // Envoi de la spécialité sélectionnée
+          selectedSpecialite?.libelle,
+          'description':description.text // Envoi de la spécialité sélectionnée
     });
   }
 
   @override
   void dispose() {
     controller.removeListener(updateData);
+    description.removeListener(updateData);
     super.dispose();
   }
 
@@ -70,10 +72,12 @@ void onSpecialiteChanged(Specialite? newSpecialite) {
   void initState() {
     loadSpecialite();
     controller.addListener(updateData);
+    description.addListener(updateData);
     super.initState();
   }
 
   final controller = TextEditingController();
+  final description = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +127,37 @@ void onSpecialiteChanged(Specialite? newSpecialite) {
           },
         ),
       ),
+
+      // description
+      Container(
+          margin: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.blue,
+                width: 2.0,
+              ),
+            ),
+          ),
+          child: TextFormField(
+            maxLines: 3,
+            controller: description,
+            decoration: const InputDecoration(
+              icon: Icon(Icons.info),
+              border: InputBorder.none,
+              hintText: "Description",
+            ),
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "la description est obligatoire";
+              } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(description.text)) {
+                return "Le description ne peut contenir que des lettres";
+              }
+              return null;
+            },
+          ),
+        ),
     ],
   );
 }

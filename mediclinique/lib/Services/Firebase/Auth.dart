@@ -27,6 +27,7 @@ class Auth{
     }
   }
 // login
+// ignore: non_constant_identifier_names
 Future<void> SigninWithEmailAndPassword(String email,String password) async{
   await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
 } 
@@ -41,10 +42,11 @@ Future<void> inscrireMedecin(
   String adresse,
   String password,
   String dateOfNaiss,
-  String gender, // Renommez ce paramètre pour correspondre à ce que vous utilisez
+  String gender, 
   String rpps,
   String photo,
   String specialite,
+  String description,
   List<Jourdisponibilite> jours,
   {String role = 'medecin'}
 ) async {
@@ -65,6 +67,7 @@ Future<void> inscrireMedecin(
       'rpps': rpps,
       'photo': photo,
       'specialite': specialite,
+      'description':description,
       'role': role,
       'timestamp': Timestamp.now(),
     });

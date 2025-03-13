@@ -55,7 +55,7 @@ class SignupmedecinState extends State<Signupmedecin> {
         isActive: true,
       ),
       Step(
-        title: Text("Encore sur vous",
+        title: Text("Encore en plus",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         content: Step2(onDataChanged: getStep2Data),
         isActive: true,
@@ -182,6 +182,7 @@ Future<void> inscrireMedecin() async {
     String rpps = medecinData['rpps'] ?? '';
     String photo = medecinData['photo'] ?? '';
     String specialite = medecinData['specialite'] ?? '';
+    String description = medecinData['description'] ?? '';
     List<Jourdisponibilite> jours = medecinData['doctorAvailability'] ?? [];
 
     
@@ -199,6 +200,7 @@ Future<void> inscrireMedecin() async {
       rpps,
       photo,
       specialite,
+      description,
       jours,
     );
 
