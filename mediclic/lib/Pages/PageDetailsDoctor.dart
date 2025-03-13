@@ -15,7 +15,8 @@ class _DetailPageDoctorState extends State<DetailPageDoctor> {
   // Fonction pour formater les créneaux horaires
   String _formatCreneau(Map<String, dynamic> creneau) {
     final startHour = creneau['startHour'] ?? 0; // Valeur par défaut si null
-    final startMinute = creneau['startMinute']?.toString().padLeft(2, '0') ?? '00';
+    final startMinute =
+        creneau['startMinute']?.toString().padLeft(2, '0') ?? '00';
     final endHour = creneau['endHour'] ?? 0; // Valeur par défaut si null
     final endMinute = creneau['endMinute']?.toString().padLeft(2, '0') ?? '00';
 
@@ -76,7 +77,11 @@ class _DetailPageDoctorState extends State<DetailPageDoctor> {
               ),
               child: Container(
                 color: Colors.white,
-                padding: EdgeInsets.only(top: 30, left: 18, right: 18, bottom: 80), // Ajoutez un espace en bas pour le bouton
+                padding: EdgeInsets.only(
+                    top: 30,
+                    left: 18,
+                    right: 18,
+                    bottom: 80), // Ajoutez un espace en bas pour le bouton
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -143,16 +148,19 @@ class _DetailPageDoctorState extends State<DetailPageDoctor> {
                       Expanded(
                         child: Scrollbar(
                           child: ListView(
-                            children: widget.doctor.creneaux.map((jourCreneaux) {
+                            children:
+                                widget.doctor.creneaux.map((jourCreneaux) {
                               final jour = jourCreneaux['jour'];
-                              final creneaux = jourCreneaux['creneaux'] as List<dynamic>;
+                              final creneaux =
+                                  jourCreneaux['creneaux'] as List<dynamic>;
 
                               return Card(
                                 margin: EdgeInsets.only(bottom: 8),
                                 child: Padding(
                                   padding: EdgeInsets.all(12),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         jour,
@@ -163,7 +171,8 @@ class _DetailPageDoctorState extends State<DetailPageDoctor> {
                                       ),
                                       ...creneaux.map((creneau) {
                                         return Padding(
-                                          padding: const EdgeInsets.only(left: 16, bottom: 8),
+                                          padding: const EdgeInsets.only(
+                                              left: 16, bottom: 8),
                                           child: Text(
                                             _formatCreneau(creneau),
                                             style: TextStyle(fontSize: 14),
@@ -194,7 +203,8 @@ class _DetailPageDoctorState extends State<DetailPageDoctor> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Prisederendezvous(doctor: widget.doctor),
+                    builder: (context) =>
+                        Prisederendezvous(doctor: widget.doctor),
                   ),
                 );
                 print("Prendre un rendez-vous");

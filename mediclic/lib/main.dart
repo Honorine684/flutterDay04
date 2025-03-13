@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mediclic/Component/BottomBar.dart';
+import 'package:mediclic/Authentication/RedirectionPage.dart';
 import 'package:mediclic/firebase_options.dart';
 
 Future<void> main()async{
@@ -9,7 +9,7 @@ Future<void> main()async{
   options: DefaultFirebaseOptions.currentPlatform
   );
   runApp(MaterialApp(
-   home: Bottombar(),
+   home: Redirectionpage(),
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
       scaffoldBackgroundColor: Colors.white,
