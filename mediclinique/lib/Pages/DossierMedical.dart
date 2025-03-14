@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class DossierMedical extends StatefulWidget {
 
-  final String patientId;
-  final String patientName;
+  /*final String patientId;
+  final String patientName;*/
 
   const DossierMedical({
-    Key? key, 
-    required this.patientId, 
-    required this.patientName
-  }) : super(key: key);
+    super.key, 
+    /*required this.patientId, 
+    required this.patientName*/
+  });
 
 
   @override

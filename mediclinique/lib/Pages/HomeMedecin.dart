@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Importez Firebase Auth
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mediclinique/Authentification/SignupMedecin.dart';
 import 'package:mediclinique/JsonModels/Rdv.dart';
-import 'package:mediclinique/Pages/DossierMedical.dart';
+import 'package:mediclinique/Pages/Consultation.dart';
 import 'package:mediclinique/Pages/PageProfileMedecin.dart';
 import 'package:mediclinique/Services/Firebase/FirestoreService.dart';
 
@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage> {
   List<Rdv> rendezVous = [];
-  String doctorId = ""; // Variable pour stocker le nom de l'utilisateur connecté
+  String doctorId = "";
 
   @override
   void initState() {
@@ -24,7 +24,7 @@ class _HomePage extends State<HomePage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       setState(() {
-        doctorId = user.uid ;
+        doctorId = user.uid;
       });
       // Charger les rendez-vous de l'utilisateur connecté
       loadRdv(doctorId);
@@ -206,7 +206,6 @@ class _HomePage extends State<HomePage> {
               ),
               Row(
                 children: [
-
                   Container(
                     width: largeurEcran * 0.88,
                     height: hauteurEcran * 0.45,
@@ -221,20 +220,28 @@ class _HomePage extends State<HomePage> {
                         itemBuilder: (context, index) => GestureDetector(
                           onTap: () {
                             // Action lors du clic sur un rendez-vous
-                            Navigator.push(
+                            /*Navigator.push(
     context, 
     MaterialPageRoute(
       builder: (context) => DossierMedical(
-        patientId: rendezVous[index].id,  // Passez l'ID du patient
-        patientName: rendezVous[index].nomUser,  // Passez le nom du patient
+        patientId: rendezVous[index].id,
+        patientName: rendezVous[index].nomUser,  
       )
     )
-  );
+  );*/
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        AjoutConsultation(
+                                          patientId: rendezVous[index].id,
+                                          patientName:
+                                              rendezVous[index].nomUser,
+                                        )));
                           },
-                          
                           child: Container(
-                            
-                            margin: EdgeInsets.only(right: 10, left: 10,top: 20),
+                            margin:
+                                EdgeInsets.only(right: 10, left: 10, top: 20),
                             width: largeurEcran * 0.6,
                             height: 50,
                             decoration: BoxDecoration(
@@ -246,7 +253,8 @@ class _HomePage extends State<HomePage> {
                                 Text(
                                   rendezVous[index].date,
                                   style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(width: 10),
                                 Text(
