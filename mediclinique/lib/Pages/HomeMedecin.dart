@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importez Firebase Auth
 import 'package:mediclinique/Authentification/SignupMedecin.dart';
+import 'package:mediclinique/JsonModels/Rdv.dart';
+import 'package:mediclinique/Pages/DossierMedical.dart';
 import 'package:mediclinique/Pages/PageProfileMedecin.dart';
-
-
+import 'package:mediclinique/Services/Firebase/FirestoreService.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,10 +14,52 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
+  List<Rdv> rendezVous = [];
+  String doctorId = ""; // Variable pour stocker le nom de l'utilisateur connecté
+
+  @override
+  void initState() {
+    super.initState();
+    // Récupérer le nom de l'utilisateur connecté
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        doctorId = user.uid ;
+      });
+      // Charger les rendez-vous de l'utilisateur connecté
+      loadRdv(doctorId);
+    }
+  }
+
+  void loadRdv(String userName) {
+    print("Démarrage du chargement des rdv pour $doctorId...");
+    Firestoreservice().getRendezVous(doctorId).listen((snapshot) {
+      print("Données reçues: ${snapshot.docs.length} documents");
+      List<Rdv> RdvList = [];
+
+      for (var doc in snapshot.docs) {
+        try {
+          String date = doc.get('date');
+          String nomUser = doc.get('nomUser');
+          String id = doc.id;
+          RdvList.add(Rdv(id: id, date: date, nomUser: nomUser));
+        } catch (e) {
+          print("Erreur sur un document: $e");
+        }
+      }
+
+      setState(() {
+        rendezVous = RdvList;
+      });
+    }, onError: (error) {
+      print("Erreur lors du chargement des rendez-vous: $error");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final hauteurEcran = MediaQuery.of(context).size.height;
-   final largeurEcran = MediaQuery.of(context).size.width;
+    final largeurEcran = MediaQuery.of(context).size.width;
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -34,24 +78,26 @@ class _HomePage extends State<HomePage> {
                 Icons.health_and_safety,
                 color: Colors.blue,
               ),
-              
             ],
-
           ),
           actions: [
             Container(
-              margin: EdgeInsets.only(right: 20,left: 20),
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue.shade100,
-                    ),
-                    child:
-                        IconButton(onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> const PageProfileMedecin()));
-                        }, icon: Icon(Icons.person)),
-                  )
+              margin: EdgeInsets.only(right: 20, left: 20),
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue.shade100,
+              ),
+              child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const PageProfileMedecin()));
+                  },
+                  icon: Icon(Icons.person)),
+            )
           ],
         ),
         body: Padding(
@@ -70,7 +116,7 @@ class _HomePage extends State<HomePage> {
               SizedBox(
                 height: 15,
               ),
-Row(
+              Row(
                 children: [
                   SizedBox(
                       height: 130,
@@ -160,37 +206,57 @@ Row(
               ),
               Row(
                 children: [
+
                   Container(
-                    width: largeurEcran*0.88,
-                    height: hauteurEcran*0.45,
+                    width: largeurEcran * 0.88,
+                    height: hauteurEcran * 0.45,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.blue.shade100
-                    ),
-                     child: SizedBox(
-                      height: hauteurEcran*0.45,
-                      child: ListView(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.blue.shade100),
+                    child: SizedBox(
+                      height: hauteurEcran * 0.45,
+                      child: ListView.builder(
+                        itemCount: rendezVous.length,
                         scrollDirection: Axis.vertical,
-                        children: [
-                         SizedBox(height: 20,),
-                          Container(
-                            margin: EdgeInsets.only(right: 10,left: 10),
-                            width: largeurEcran*0.6,
+                        itemBuilder: (context, index) => GestureDetector(
+                          onTap: () {
+                            // Action lors du clic sur un rendez-vous
+                            Navigator.push(
+    context, 
+    MaterialPageRoute(
+      builder: (context) => DossierMedical(
+        patientId: rendezVous[index].id,  // Passez l'ID du patient
+        patientName: rendezVous[index].nomUser,  // Passez le nom du patient
+      )
+    )
+  );
+                          },
+                          
+                          child: Container(
+                            
+                            margin: EdgeInsets.only(right: 10, left: 10,top: 20),
+                            width: largeurEcran * 0.6,
                             height: 50,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white
-                            ),
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white),
                             child: Row(
                               children: [
-                                SizedBox(width: 10,),
-                                Text("9h30",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                                SizedBox(width: 10,),
-                                Text("HOnorine,abdoul",style: TextStyle(fontSize: 14),)
+                                SizedBox(width: 10),
+                                Text(
+                                  rendezVous[index].date,
+                                  style: TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  rendezVous[index].nomUser,
+                                  style: TextStyle(fontSize: 14),
+                                )
                               ],
                             ),
-                          )
-                        ],
+                          ),
+                        ),
                       ),
                     ),
                   )
