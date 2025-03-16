@@ -108,14 +108,24 @@ class PrisederendezvousState extends State<Prisederendezvous> {
                     return;
                   }
 
-                
+                // Récupérer l'ID de l'utilisateur connecté
+                final String? idUser = await Auth().getCurrentUserId();
+                if (idUser == null) {
+                  print("Erreur : Utilisateur non connecté.");
+                  return;
+                }
+
+                // Récupérer l'ID du médecin
+                final String doctorId = widget.doctor.id;
                   await Firestoreservices().addRendezVous(
-                    praticien.text,
-                    specialite.text,
-                    nomUser,
-                    date.text,
-                  
-                    raison.text,
+                    
+                  doctorId: doctorId, 
+                  idUser: idUser, 
+                  praticien: praticien.text,
+                  specialite: specialite.text,
+                  nomUser: await Auth().getCurrentUserName() ?? "Utilisateur inconnu",
+                  date: date.text,
+                  raison: raison.text,
                   );
 
                   Navigator.pop(context); 

@@ -1,3 +1,4 @@
+import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mediclic/JsonModels/Doctor.dart';
 import 'package:mediclic/JsonModels/Specialite.dart';
@@ -55,6 +56,26 @@ class AccueilState extends State<Accueil> {
   List<Specialite> specialites = [];
   String? selectedSpecialite;
   List<Doctor> doctors = [];
+  List<Map<String, dynamic>> Suggestion = [];
+  afficherSuggestion(String question) async {
+    if (question.isEmpty) {
+      setState(() {
+        Suggestion = [];
+      });
+      return;
+    }
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .where("role", isEqualTo: "medecin")
+        .where("nom", isGreaterThanOrEqualTo: question)
+        .where("nom", isLessThan: question + "z")
+        .get();
+    setState(() {
+      Suggestion = snapshot.docs.map((doc) {
+        return {"nom": doc["nom"], "docId": doc.reference.id};
+      }).toList();
+    });
+  }
 
   @override
   void initState() {
@@ -62,80 +83,81 @@ class AccueilState extends State<Accueil> {
     loadSpecialite();
   }
 
-void loadDoctorsBySpecialite(String specialite) {
-  print("Chargement des médecins pour la spécialité: $specialite");
-  Firestoreservices().getDoctor(specialite).listen((snapshot) {
-    List<Doctor> doctorList = [];
-    
-    // Compteur pour savoir quand tous les médecins sont chargés
-    int doctorsToProcess = snapshot.docs.length;
-    int doctorsProcessed = 0;
-    
-    if (doctorsToProcess == 0) {
-      setState(() {
-        doctors = []; // Aucun médecin trouvé
-        print("Aucun médecin trouvé pour cette spécialité");
-      });
-      return;
-    }
-    
-    for (var doc in snapshot.docs) {
-      try {
-        // Extraire les données de base du médecin
-        Map<String, dynamic> doctorData = doc.data() as Map<String, dynamic>;
-        
-        // Récupérer les créneaux du médecin
-        Firestoreservices().getCreneauxForDoctor(doc.id).listen((creneauxSnapshot) {
-          List<Map<String, dynamic>> creneauxList = [];
-          
-          // Convertir les créneaux en Map
-          for (var creneauDoc in creneauxSnapshot.docs) {
-            creneauxList.add(creneauDoc.data() as Map<String, dynamic>);
-          }
-          
-          // Créer l'objet Doctor avec toutes les données
-          Doctor doctor = Doctor(
-            id: doc.id,
-            nom: doctorData['nom'] ?? 'Sans nom',
-            genre: doctorData['gender'] ?? 'Non spécifié',
-            photo: doctorData['photo'] ?? '',
-            specialite: doctorData['specialite'] ?? specialite,
-            description: doctorData['description'] ?? "Sans description",
-            adresse: doctorData['adresse'] ?? "sans adresse",
-            creneaux: creneauxList
-          );
-          
-          doctorList.add(doctor);
-          doctorsProcessed++;
-          
-          // Mettre à jour l'état quand tous les médecins sont chargés
-          if (doctorsProcessed == doctorsToProcess) {
-            setState(() {
-              doctors = doctorList;
-              print("Médecins chargés: ${doctorList.length}");
-            });
-          }
-        }, onError: (error) {
-          print("Erreur lors du chargement des créneaux pour ${doc.id}: $error");
-          doctorsProcessed++;
-          
-          // Même en cas d'erreur, on vérifie si tous les médecins ont été traités
-          if (doctorsProcessed == doctorsToProcess) {
-            setState(() {
-              doctors = doctorList;
-              print("Médecins chargés: ${doctorList.length}");
-            });
-          }
+  void loadDoctorsBySpecialite(String specialite) {
+    print("Chargement des médecins pour la spécialité: $specialite");
+    Firestoreservices().getDoctor(specialite).listen((snapshot) {
+      List<Doctor> doctorList = [];
+
+      // Compteur pour savoir quand tous les médecins sont chargés
+      int doctorsToProcess = snapshot.docs.length;
+      int doctorsProcessed = 0;
+
+      if (doctorsToProcess == 0) {
+        setState(() {
+          doctors = []; // Aucun médecin trouvé
+          print("Aucun médecin trouvé pour cette spécialité");
         });
-      } catch (e) {
-        print("Erreur sur un document médecin: $e");
-        doctorsProcessed++;
+        return;
       }
-    }
-  }, onError: (error) {
-    print("Erreur lors du chargement des médecins: $error");
-  });
-}
+
+      for (var doc in snapshot.docs) {
+        try {
+          // Extraire les données de base du médecin
+          Map<String, dynamic> doctorData = doc.data() as Map<String, dynamic>;
+
+          // Récupérer les créneaux du médecin
+          Firestoreservices().getCreneauxForDoctor(doc.id).listen(
+              (creneauxSnapshot) {
+            List<Map<String, dynamic>> creneauxList = [];
+
+            // Convertir les créneaux en Map
+            for (var creneauDoc in creneauxSnapshot.docs) {
+              creneauxList.add(creneauDoc.data() as Map<String, dynamic>);
+            }
+
+            // Créer l'objet Doctor avec toutes les données
+            Doctor doctor = Doctor(
+                id: doc.id,
+                nom: doctorData['nom'] ?? 'Sans nom',
+                genre: doctorData['gender'] ?? 'Non spécifié',
+                photo: doctorData['photo'] ?? '',
+                specialite: doctorData['specialite'] ?? specialite,
+                description: doctorData['description'] ?? "Sans description",
+                adresse: doctorData['adresse'] ?? "sans adresse",
+                creneaux: creneauxList);
+
+            doctorList.add(doctor);
+            doctorsProcessed++;
+
+            // Mettre à jour l'état quand tous les médecins sont chargés
+            if (doctorsProcessed == doctorsToProcess) {
+              setState(() {
+                doctors = doctorList;
+                print("Médecins chargés: ${doctorList.length}");
+              });
+            }
+          }, onError: (error) {
+            print(
+                "Erreur lors du chargement des créneaux pour ${doc.id}: $error");
+            doctorsProcessed++;
+
+            // Même en cas d'erreur, on vérifie si tous les médecins ont été traités
+            if (doctorsProcessed == doctorsToProcess) {
+              setState(() {
+                doctors = doctorList;
+                print("Médecins chargés: ${doctorList.length}");
+              });
+            }
+          });
+        } catch (e) {
+          print("Erreur sur un document médecin: $e");
+          doctorsProcessed++;
+        }
+      }
+    }, onError: (error) {
+      print("Erreur lors du chargement des médecins: $error");
+    });
+  }
 
   void loadSpecialite() {
     print("Démarrage du chargement des spécialités...");
@@ -235,6 +257,38 @@ void loadDoctorsBySpecialite(String specialite) {
                     SizedBox(height: 10),
 
                     // Barre de recherche
+
+                    Autocomplete<Map<String, dynamic>>(
+                      optionsBuilder: (TextEditingValue value) {
+                        if (value.text.isEmpty) {
+                          return const Iterable<Map<String, dynamic>>.empty();
+                        }
+                        final listfiltre = Suggestion.where((m) {
+                          if (m.containsKey("nom")) {
+                            return m["nom"]
+                                .toString()
+                                .toUpperCase()
+                                .contains(value.text.toUpperCase());
+                          }
+                          return false;
+                        }).toList();
+                        return listfiltre;
+                      },
+                      displayStringForOption: (Map<String, dynamic> option) =>
+                          option["nom"],
+                      fieldViewBuilder: (context, textEditingController,
+                          focusNode, onFieldSubmitted) {
+                        _rechercheController.text = textEditingController.text;
+                        return TextField(
+                          controller: textEditingController,
+                          focusNode: focusNode,
+                          onChanged: (value)async{
+                            await afficherSuggestion(value);
+                          },
+                        );
+                      },
+                    ),
+
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 15),
                       decoration: BoxDecoration(
@@ -645,7 +699,9 @@ void loadDoctorsBySpecialite(String specialite) {
                                                         context,
                                                         MaterialPageRoute(
                                                             builder: (context) =>
-                                                                 DetailPageDoctor(doctor:doctors[index])));
+                                                                DetailPageDoctor(
+                                                                    doctor: doctors[
+                                                                        index])));
                                                   },
                                                   child: Text(
                                                     "Voir plus",

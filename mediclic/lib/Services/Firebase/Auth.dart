@@ -89,5 +89,9 @@ Future<void> createUserWithEmailAndPassword( {
   }
   return null;
 }
+  Future<String?> getCurrentUserId() async {
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.uid; // Retourne l'ID de l'utilisateur connecté
+  }
   
 }

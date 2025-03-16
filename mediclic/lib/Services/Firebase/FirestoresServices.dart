@@ -53,16 +53,18 @@ class Firestoreservices {
       rethrow;
     }
   }
-Future<void> addRendezVous(
-  String praticien,
-  String specialite,
-  String nomUser,
-  String date,
-  String raison,
-) async {
+Future<void> addRendezVous({
+  required String doctorId, // ID du médecin
+  required String idUser, // ID du patient
+  required String praticien,
+  required String specialite,
+  required String nomUser,
+  required String date,
+  required String raison,
+}) async {
   // Vérifier que les paramètres requis ne sont pas vides
-  if (praticien.isEmpty) {
-    throw Exception("Le nom du praticien ne peut pas être vide");
+  if (praticien.isEmpty || idUser.isEmpty || doctorId.isEmpty) {
+    throw Exception("Les champs obligatoires ne peuvent pas être vides");
   }
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -73,6 +75,8 @@ Future<void> addRendezVous(
   // Ajouter le rendez-vous
   try {
     await rendezVousRef.set({
+      'doctor_id': doctorId, // ID du médecin
+      'idUser': idUser, // ID du patient
       'praticien': praticien,
       'specialite': specialite,
       'nomUser': nomUser,

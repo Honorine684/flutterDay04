@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DossierMedical extends StatefulWidget {
+  const DossierMedical({super.key});
+
   @override
   _DossierMedicalState createState() => _DossierMedicalState();
 }
