@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mediclinique/Authentification/SignupMedecin.dart';
 import 'package:mediclinique/JsonModels/Rdv.dart';
-import 'package:mediclinique/Pages/Consultation.dart';
+import 'package:mediclinique/Pages/ChoicePage.dart';
 import 'package:mediclinique/Pages/PageProfileMedecin.dart';
 import 'package:mediclinique/Services/Firebase/FirestoreService.dart';
 
@@ -42,7 +42,10 @@ class _HomePage extends State<HomePage> {
           String date = doc.get('date');
           String nomUser = doc.get('nomUser');
           String id = doc.id;
-          RdvList.add(Rdv(id: id, date: date, nomUser: nomUser));
+          String doctorId = doc.get('doctor_id');
+          String doctorName = doc.get('praticien');
+          String patientId = doc.get('idUser');
+          RdvList.add(Rdv(id: id, date: date,idUser: patientId, nomUser: nomUser,doctorId: doctorId,doctorName: doctorName));
         } catch (e) {
           print("Erreur sur un document: $e");
         }
@@ -219,17 +222,8 @@ class _HomePage extends State<HomePage> {
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) => GestureDetector(
                           onTap: () {
-                            // Action lors du clic sur un rendez-vous
-                            /*Navigator.push(
-    context, 
-    MaterialPageRoute(
-      builder: (context) => DossierMedical(
-        patientId: rendezVous[index].id,
-        patientName: rendezVous[index].nomUser,  
-      )
-    )
-  );*/
-                            Navigator.push(
+                           
+                           /* Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
@@ -237,6 +231,14 @@ class _HomePage extends State<HomePage> {
                                           patientId: rendezVous[index].id,
                                           patientName:
                                               rendezVous[index].nomUser,
+                                              doctorId: rendezVous[index].doctorId,
+                                              doctorName: rendezVous[index].doctorName,
+                                        )));*/
+                                        Navigator.push(context, MaterialPageRoute(builder: (context)=> ChoixPage(
+                                          patientId:rendezVous[index].idUser,
+                                          patientName:rendezVous[index].nomUser,
+                                          doctorId:rendezVous[index].doctorId,
+                                           doctorName: rendezVous[index].doctorName,
                                         )));
                           },
                           child: Container(

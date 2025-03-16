@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 class DossierMedical extends StatefulWidget {
 
-  /*final String patientId;
-  final String patientName;*/
-
+  final String patientId;
+  final String patientName;
+  final Map<String, dynamic>? consultationData;
   const DossierMedical({
     super.key, 
-    /*required this.patientId, 
-    required this.patientName*/
+    required this.patientId, 
+    required this.patientName,
+    this.consultationData,
   });
 
 
@@ -29,6 +30,8 @@ class DossierMedicalState extends State<DossierMedical> {
         backgroundColor: Colors.blue.shade100,
       ),
       drawer: MedicalDrawer(
+        patientId: widget.patientId,
+        patientName: widget.patientName,
         clickedIndex: clickedIndex,
         onItemSelected: (index) {
           setState(() {
@@ -100,10 +103,19 @@ class DossierMedicalState extends State<DossierMedical> {
 
 // ---------- DRAWER ----------
 class MedicalDrawer extends StatelessWidget {
+
+  final String patientId;
+  final String patientName;
   final int clickedIndex;
   final Function(int) onItemSelected;
 
-  MedicalDrawer({required this.clickedIndex, required this.onItemSelected});
+  MedicalDrawer(
+    {
+    required this.patientId,
+    required this.patientName,
+    required this.clickedIndex,
+    required this.onItemSelected,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -117,9 +129,9 @@ class MedicalDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("ID Patient", style: TextStyle(color: Colors.white70, fontSize: 12)),
-                Text("PAT-24031101", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(patientId, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                 SizedBox(height: 8),
-                Text("Marie Dupont", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(patientName, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                 Text("15/06/1975 (50 ans)", style: TextStyle(color: Colors.white70)),
               ],
             ),
@@ -419,10 +431,57 @@ class AntecedentsPage extends StatelessWidget {
 }
 
 class ConsultationsPage extends StatelessWidget {
+  final Map<String, dynamic>? consultationData;
+  
+  ConsultationsPage({this.consultationData});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Si nous avons des données de consultation, les afficher
+    if (consultationData != null) {
+      return Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle("📅 Date & Médecin"),
+                _buildInfoCard([
+                  "Date : ${consultationData!['consultationDate']}",
+                  "Médecin : ${consultationData!['doctorName']}",
+                ]),
+
+                _buildSectionTitle("🩺 Examen Clinique"),
+                _buildInfoCard([
+                  "Température : ${consultationData!['temperature']} °C",
+                  "Tension artérielle : ${consultationData!['systolic']}/${consultationData!['diastolic']} mmHg",
+                  "Poids : ${consultationData!['weight']} kg, Taille : ${consultationData!['height']} cm (IMC : ${consultationData!['bmi']})",
+                  "Fréquence cardiaque : ${consultationData!['heartRate']} bpm",
+                ]),
+
+                _buildSectionTitle("🏷 Diagnostic & Conclusion"),
+                _buildInfoCard([
+                  "Diagnostic : ${consultationData!['diagnosis']}",
+                ]),
+
+                _buildSectionTitle("💊 Traitement & Recommandations"),
+                _buildInfoCard([
+                  "Plan de traitement : ${consultationData!['plan']}",
+                ]),
+
+                _buildSectionTitle("📌 Notes du Médecin & Suivi"),
+                _buildInfoCard([
+                  consultationData!['notes'],
+                ]),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      // Sinon, afficher les données par défaut
+      return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -482,7 +541,10 @@ class ConsultationsPage extends StatelessWidget {
         ),
       ),
     );
+    }
   }
+
+}
 
   /// Fonction pour afficher le titre d'une section
   Widget _buildSectionTitle(String title) {
@@ -534,7 +596,7 @@ class ConsultationsPage extends StatelessWidget {
       ),
     );
   }
-}
+
 
 class ExamensPage extends StatelessWidget {
   final List<Map<String, String>> examens = [

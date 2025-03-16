@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mediclinique/Pages/DossierMedical.dart';
+import 'package:mediclinique/Services/Firebase/FirestoreService.dart';
 
 
 class AjoutConsultation extends StatefulWidget {
   final String patientId;
   final String patientName;
+  final String doctorId;
+  final String doctorName;
   const AjoutConsultation({
     super.key, 
     required this.patientId, 
-    required this.patientName
+    required this.patientName,
+    required this.doctorId,
+    required this.doctorName,
   });
 
   @override
@@ -24,6 +29,8 @@ class AjoutConsultationState extends State<AjoutConsultation> {
   final TextEditingController _surgicalHistoryController = TextEditingController();
   final TextEditingController _familyHistoryController = TextEditingController();
   final TextEditingController _allergiesController = TextEditingController();
+    final TextEditingController chroniqueController = TextEditingController();
+
   final TextEditingController _currentTreatmentsController = TextEditingController();
   final TextEditingController _temperatureController = TextEditingController();
   final TextEditingController _systolicController = TextEditingController();
@@ -43,19 +50,17 @@ class AjoutConsultationState extends State<AjoutConsultation> {
   final TextEditingController _planController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
-  String? _selectedDoctor;
-  Map<String, bool> chronicDiseases = {
-    'Diabète': false,
-    'Hypertension': false,
-    'Asthme': false,
-    'Cardiopathie': false,
-  };
+ String? selectedDoctor;
+
 
   @override
   void initState() {
     super.initState();
     _consultationDateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
+  _patientIdController.text = widget.patientId;
+  
+  selectedDoctor = widget.doctorName;
     // Ajouter des listeners pour le calcul automatique de l'IMC
     _weightController.addListener(_calculateBMI);
     _heightController.addListener(_calculateBMI);
@@ -119,9 +124,13 @@ class AjoutConsultationState extends State<AjoutConsultation> {
     }
   }
 
-  void _submitForm() {
+  void submitForm() {
     if (_formKey.currentState!.validate()) {
-      // Enregistrer les données
+      Firestoreservice().addConsultation(_patientIdController.text, widget.patientName, _consultationDateController.text, 
+      widget.doctorId, widget.doctorName, _medicalHistoryController.text, _familyHistoryController.text, _surgicalHistoryController.text,
+      _allergiesController.text,_currentTreatmentsController.text, _temperatureController.text, _systolicController.text, _diastolicController.text,  _heartRateController.text, _weightController.text, 
+      _heightController.text, _generalExamController.text,_cardiovascularExamController.text, _respiratoryExamController.text,_digestiveExamController.text, 
+       _neurologicalExamController.text, _musculoskeletalExamController.text,_otherExamsController.text, _diagnosisController.text,_planController.text,_notesController.text);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Consultation enregistrée avec succès')),
       );
@@ -202,7 +211,7 @@ class AjoutConsultationState extends State<AjoutConsultation> {
               child: TextFormField(
                 controller: _patientIdController,
                 decoration: const InputDecoration(
-                  labelText: 'ID Patient',
+                  labelText: "Id patient"
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -210,6 +219,7 @@ class AjoutConsultationState extends State<AjoutConsultation> {
                   }
                   return null;
                 },
+                readOnly: true, 
               ),
             ),
             const SizedBox(width: 16),
@@ -226,31 +236,14 @@ class AjoutConsultationState extends State<AjoutConsultation> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
-        Text(""),
-        DropdownButtonFormField<String>(
-          value: _selectedDoctor,
-          decoration: const InputDecoration(
-            labelText: 'Médecin',
-          ),
-          items: ['Dr. Martin', 'Dr. Dupont', 'Dr. Leclerc', 'Dr. Bernard']
-              .map((doctor) => DropdownMenuItem(
-                    value: doctor,
-                    child: Text(doctor),
-                  ))
-              .toList(),
-          onChanged: (value) {
-            setState(() {
-              _selectedDoctor = value;
-            });
-          },
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Veuillez sélectionner un médecin';
-            }
-            return null;
-          },
+      const SizedBox(height: 16),
+      TextFormField(
+        initialValue: widget.doctorName,
+        decoration: const InputDecoration(
+          labelText: 'Médecin',
         ),
+        readOnly: true, 
+      ),
       ],
     );
   }
@@ -267,31 +260,13 @@ class AjoutConsultationState extends State<AjoutConsultation> {
           maxLines: 3,
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Maladies chroniques',
-          style: TextStyle(fontWeight: FontWeight.bold),
+              TextFormField(
+        controller: chroniqueController,
+        decoration: const InputDecoration(
+          labelText: 'Maladies chroniques',
         ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 16.0,
-          runSpacing: 0.0,
-          children: chronicDiseases.keys.map((String disease) {
-            return SizedBox(
-              width: 160,
-              child: CheckboxListTile(
-                title: Text(disease),
-                value: chronicDiseases[disease],
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: EdgeInsets.zero,
-                onChanged: (bool? value) {
-                  setState(() {
-                    chronicDiseases[disease] = value!;
-                  });
-                },
-              ),
-            );
-          }).toList(),
-        ),
+        maxLines: 3,
+      ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _surgicalHistoryController,
@@ -533,7 +508,56 @@ class AjoutConsultationState extends State<AjoutConsultation> {
         const SizedBox(width: 16),
         ElevatedButton(
           onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=> const DossierMedical()));
+    Map<String, dynamic> consultationData = {
+      'patientId': widget.patientId,
+      'patientName': widget.patientName,
+      'doctorName': widget.doctorName,
+      'consultationDate': _consultationDateController.text,
+      'medicalHistory': _medicalHistoryController.text,
+      'surgicalHistory': _surgicalHistoryController.text,
+      'familyHistory': _familyHistoryController.text,
+      'allergies': _allergiesController.text,
+      'currentTreatments': _currentTreatmentsController.text,
+      'temperature': _temperatureController.text,
+      'systolic': _systolicController.text,
+      'diastolic': _diastolicController.text,
+      'heartRate': _heartRateController.text,
+      'weight': _weightController.text,
+      'height': _heightController.text,
+      'generalExam': _generalExamController.text,
+      'cardiovascularExam': _cardiovascularExamController.text,
+      'respiratoryExam': _respiratoryExamController.text,
+      'digestiveExam': _digestiveExamController.text,
+      'neurologicalExam': _neurologicalExamController.text,
+      'musculoskeletalExam': _musculoskeletalExamController.text,
+      'otherExams': _otherExamsController.text,
+      'diagnosis': _diagnosisController.text,
+      'plan': _planController.text,
+      'notes': _notesController.text,
+      };
+
+    Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => DossierMedical(
+          patientId: widget.patientId,
+          patientName: widget.patientName,
+          consultationData: consultationData,
+        )
+      )
+    );
+        
+            
+            submitForm();
+           Navigator.push(
+    context, 
+    MaterialPageRoute(
+      builder: (context) => DossierMedical(
+        patientId: widget.patientId,
+        patientName: widget.patientName,  
+      )
+    )
+  );
           },
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
