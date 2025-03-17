@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mediclic/JsonModels/Doctor.dart';
 import 'package:mediclic/JsonModels/Specialite.dart';
 import 'package:mediclic/Pages/PageDetailsDoctor.dart';
+import 'package:mediclic/Services/Firebase/Auth.dart';
 import 'package:mediclic/Services/Firebase/FirestoresServices.dart';
 import 'package:mediclic/cardio.dart';
 
@@ -201,11 +202,21 @@ class AccueilState extends State<Accueil> {
       "image": "assets/image/exercice.jpg"
     },
   ];
+  Future<String?> getCurrentUserName() async {
+    // Récupérer le nom de l'utilisateur connecté
+    final String? nomUser = await Auth().getCurrentUserName();
+    if (nomUser == null) {
+      print("Erreur : Utilisateur non connecté.");
+      return nomUser;
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
     final largeurEcran = MediaQuery.of(context).size.width;
     final hauteurEcran = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -282,7 +293,7 @@ class AccueilState extends State<Accueil> {
                         return TextField(
                           controller: textEditingController,
                           focusNode: focusNode,
-                          onChanged: (value)async{
+                          onChanged: (value) async {
                             await afficherSuggestion(value);
                           },
                         );

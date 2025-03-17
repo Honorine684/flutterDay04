@@ -76,13 +76,14 @@ class PrisederendezvousState extends State<Prisederendezvous> {
             ),
             TextButton(
               onPressed: () async {
-
-                 if (selectedCreneau == null || selectedCreneau?['id'] == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Veuillez sélectionner un créneau horaire")),
-    );
-    return;
-  }
+                if (selectedCreneau == null || selectedCreneau?['id'] == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content:
+                            Text("Veuillez sélectionner un créneau horaire")),
+                  );
+                  return;
+                }
                 if (formKey.currentState!.validate()) {
                   final praticienValue = praticien.text;
                   final specialiteValue = specialite.text;
@@ -108,28 +109,28 @@ class PrisederendezvousState extends State<Prisederendezvous> {
                     return;
                   }
 
-                // Récupérer l'ID de l'utilisateur connecté
-                final String? idUser = await Auth().getCurrentUserId();
-                if (idUser == null) {
-                  print("Erreur : Utilisateur non connecté.");
-                  return;
-                }
+                  // Récupérer l'ID de l'utilisateur connecté
+                  final String? idUser = await Auth().getCurrentUserId();
+                  if (idUser == null) {
+                    print("Erreur : Utilisateur non connecté.");
+                    return;
+                  }
 
-                // Récupérer l'ID du médecin
-                final String doctorId = widget.doctor.id;
+                  // Récupérer l'ID du médecin
+                  final String doctorId = widget.doctor.id;
                   await Firestoreservices().addRendezVous(
-                    
-                  doctorId: doctorId, 
-                  idUser: idUser, 
-                  praticien: praticien.text,
-                  specialite: specialite.text,
-                  nomUser: await Auth().getCurrentUserName() ?? "Utilisateur inconnu",
-                  date: date.text,
-                  raison: raison.text,
+                    doctorId: doctorId,
+                    idUser: idUser,
+                    praticien: praticien.text,
+                    specialite: specialite.text,
+                    nomUser: await Auth().getCurrentUserName() ??
+                        "Utilisateur inconnu",
+                    date: date.text,
+                    raison: raison.text,
                   );
 
-                  Navigator.pop(context); 
-                  showAlertAppointementAdd(context); 
+                  Navigator.pop(context);
+                  showAlertAppointementAdd(context);
                 }
               },
               child: Text("Confirmer"),
@@ -141,12 +142,12 @@ class PrisederendezvousState extends State<Prisederendezvous> {
   }
 
   @override
-void initState() {
-  praticien.text = widget.doctor.nom;
-  specialite.text = widget.doctor.specialite;
-  date.text = '';
-  super.initState();
-}
+  void initState() {
+    praticien.text = widget.doctor.nom;
+    specialite.text = widget.doctor.specialite;
+    date.text = '';
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
