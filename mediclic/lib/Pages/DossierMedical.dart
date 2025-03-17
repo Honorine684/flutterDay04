@@ -1,15 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class DossierMedical extends StatefulWidget {
   const DossierMedical({super.key});
 
   @override
-  _DossierMedicalState createState() => _DossierMedicalState();
+  DossierMedicalState createState() => DossierMedicalState();
 }
 
-class _DossierMedicalState extends State<DossierMedical> {
+class DossierMedicalState extends State<DossierMedical> {
   int clickedIndex = 0; // Indice de l'élément sélectionné
-  TextEditingController _searchController = TextEditingController(); // Contrôleur de la zone de recherche
+  final TextEditingController _searchController = TextEditingController(); // Contrôleur de la zone de recherche
+  
 
   @override
   Widget build(BuildContext context) {
@@ -89,11 +92,54 @@ class _DossierMedicalState extends State<DossierMedical> {
 }
 
 // ---------- DRAWER ----------
-class MedicalDrawer extends StatelessWidget {
+class MedicalDrawer extends StatefulWidget {
   final int clickedIndex;
   final Function(int) onItemSelected;
 
   MedicalDrawer({required this.clickedIndex, required this.onItemSelected});
+
+  @override
+  _MedicalDrawerState createState() => _MedicalDrawerState();
+}
+
+class _MedicalDrawerState extends State<MedicalDrawer> {
+  User? _user;
+  String id = '';
+  String name = '';
+  String nomAyantDroit = '';
+  String email = '';
+  String contactAyantDroit = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserData();
+  }
+
+  // Récupérer les informations de l'utilisateur depuis Firestore
+  Future<void> _getUserData() async {
+    _user = FirebaseAuth.instance.currentUser;
+    if (_user != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(_user!.uid)
+            .get();
+
+        if (userDoc.exists) {
+          setState(() {
+            
+            name = userDoc['name'] ?? 'Nom non défini';
+            nomAyantDroit = userDoc['nomAyantDroit'] ?? 'Non défini';
+            email = userDoc['email'] ?? 'Email non défini';
+            contactAyantDroit = userDoc['contactAyantDroit'] ?? 'Non défini';
+          });
+        }
+      } catch (e) {
+        print('Erreur lors de la récupération des données: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,14 +155,15 @@ class MedicalDrawer extends StatelessWidget {
                 Text("ID Patient", style: TextStyle(color: Colors.white70, fontSize: 12)),
                 Text("PAT-24031101", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                 SizedBox(height: 8),
-                Text("Marie Dupont", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                // Utiliser les données récupérées
+                Text(name, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                 Text("15/06/1975 (50 ans)", style: TextStyle(color: Colors.white70)),
               ],
             ),
           ),
           // Liste des sections du menu
           _buildDrawerItem(0, Icons.info, "Informations"),
-           _buildDrawerItem(1, Icons.history, "Antécédents"),
+          _buildDrawerItem(1, Icons.history, "Antécédents"),
           _buildDrawerItem(2, Icons.local_hospital, "Consultations"),
           _buildDrawerItem(3, Icons.file_copy, "Examens"),
           _buildDrawerItem(4, Icons.medication, "Traitements"),
@@ -133,12 +180,12 @@ class MedicalDrawer extends StatelessWidget {
 
   // Fonction pour générer les items du drawer
   Widget _buildDrawerItem(int index, IconData icon, String title) {
-    bool isSelected = clickedIndex == index;
+    bool isSelected = widget.clickedIndex == index;
     return ListTile(
       leading: Icon(icon, color: isSelected ? Colors.white : Colors.black),
       title: Text(title, style: TextStyle(color: isSelected ? Colors.white : Colors.black)),
       tileColor: isSelected ? Colors.blue : Colors.transparent, // Fond bleu si sélectionné
-      onTap: () => onItemSelected(index), // Met à jour l'élément actif
+      onTap: () => widget.onItemSelected(index), // Met à jour l'élément actif
     );
   }
 }

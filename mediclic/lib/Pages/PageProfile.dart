@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mediclic/Authentication/Login.dart';
+import 'package:mediclic/Pages/DossierMedical.dart';
+import 'package:mediclic/Services/Firebase/Auth.dart';
 
 class ProfilPage extends StatefulWidget {
   @override
@@ -48,23 +51,18 @@ class _ProfilPageState extends State<ProfilPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profil de l'utilisateur", style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.blue,
-        centerTitle: true,
-        elevation: 0, // Supprime l'ombre de l'AppBar
-      ),
+         
+          ),
       body: _user == null
-          ? Center(child: CircularProgressIndicator()) // Affiche un chargement si l'utilisateur n'est pas encore récupéré
-          : Padding(
+          ? Center(
+              child:
+                  CircularProgressIndicator()) // Affiche un chargement si l'utilisateur n'est pas encore récupéré
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Titre de la page
-                  Text(
-                    "Mon Profil",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.blue),
-                  ),
+                 
                   SizedBox(height: 30),
 
                   // Carte avec les informations de l'utilisateur
@@ -104,24 +102,68 @@ class _ProfilPageState extends State<ProfilPage> {
                       ),
                     ),
                   ),
+                  Card(
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          // Nom
+                          ListTile(
+                            leading: Icon(Icons.edit_document),
+                            title: Text("Mon Dossier Médical "),
+                            trailing: IconButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      (MaterialPageRoute(
+                                          builder: (context) =>
+                                              const DossierMedical())));
+                                },
+                                icon: Icon(Icons.navigate_next)),
+                          ),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.list),
+                            title: Text("Liste des Consultations"),
+                            trailing: IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.navigate_next)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   SizedBox(height: 30),
 
                   // Bouton de déconnexion
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        // Log out action
-                        FirebaseAuth.instance.signOut();
+                        Auth().logout();
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const Login()),
+                          (route) => false,
+                        );
                       },
-                      child: Text("Se déconnecter", style: TextStyle(fontSize: 16)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        elevation: 5, // Légère ombre pour un effet de profondeur
+                        elevation:
+                            5, // Légère ombre pour un effet de profondeur
                       ),
+                      child: Text("Se déconnecter",
+                          style: TextStyle(fontSize: 16, color: Colors.white)),
                     ),
                   ),
                 ],
@@ -136,7 +178,7 @@ class InfoTile extends StatelessWidget {
   final String title;
   final String value;
 
-  const InfoTile({required this.title, required this.value});
+  const InfoTile({super.key, required this.title, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +187,10 @@ class InfoTile extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+          style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[600]),
         ),
         Expanded(
           child: Text(

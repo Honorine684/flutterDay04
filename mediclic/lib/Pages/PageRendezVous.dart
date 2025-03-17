@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class RendezVousPage extends StatefulWidget {
+  const RendezVousPage({super.key});
+
   @override
   _RendezVousPageState createState() => _RendezVousPageState();
 }
@@ -69,7 +71,7 @@ class _RendezVousPageState extends State<RendezVousPage> {
                       children: [
                         SizedBox(height: 5),
                         Text("🩺 Docteur : ${rdv['praticien']}"),
-                        Text("📖 Spécialité : ${rdv['spécialité']}"),
+                        Text("📖 Spécialité : ${rdv['specialite']}"),
                         Text("📅 Date : ${rdv['date']}"),
                         Text("❓ Raison : ${rdv['raison']}"),
                       ],
