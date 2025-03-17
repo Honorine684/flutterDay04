@@ -29,7 +29,7 @@ class  BottombarState extends State<Bottombar> {
       controller: pageController,
       children: [
         Accueil(),
-        Pagerendezvous(),
+        RendezVousPage(),
         Profile(),
         
         
