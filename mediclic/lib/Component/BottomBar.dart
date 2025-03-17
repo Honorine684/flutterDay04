@@ -30,7 +30,7 @@ class  BottombarState extends State<Bottombar> {
       children: [
         Accueil(),
         RendezVousPage(),
-        Profile(),
+        ProfilPage(),
         
         
       ],
