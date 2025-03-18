@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Auth {
   //currentUser est une propriété native pour récuperer l'user connecté
@@ -92,6 +93,18 @@ Future<void> createUserWithEmailAndPassword( {
   Future<String?> getCurrentUserId() async {
     final user = FirebaseAuth.instance.currentUser;
     return user?.uid; // Retourne l'ID de l'utilisateur connecté
+  }
+
+  Future<UserCredential?> loginWithGoogle() async{
+    try{
+      final googleUser = await GoogleSignIn().signIn();
+      final googleAuth = await googleUser?.authentication;
+      final cred = GoogleAuthProvider.credential(idToken: googleAuth?.idToken,accessToken: googleAuth?.accessToken);
+      return _firebaseAuth.signInWithCredential(cred);
+    }catch(e){
+      print("Erreur lors de la connexion $e");
+    }
+    return null;
   }
   
 }

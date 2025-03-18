@@ -19,7 +19,7 @@ class LoginState extends State<Login> {
   bool isRememberMeChecked = false;
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
-
+  bool googleLoading = false;
 
 
   String? validateEmail(String? value) {
@@ -209,18 +209,27 @@ class LoginState extends State<Login> {
                   children: [
                     Text("Mot de passe oublié?"),
                     TextButton(
-                      child: Text("Réinitialiser",style: TextStyle(color: Colors.blue),),
-                      onPressed: () => setState(() {
-                        // naviguer vers la page de connexion
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=> const Bottombar()));
-                      }),
-                    )
+                      child:googleLoading ? const CircularProgressIndicator():
+                       Text("Se conecter avec google",style: TextStyle(color: Colors.blue),),
+                      onPressed: ()async {
+                        setState(() {
+                          googleLoading = true;
+                        });
+                      // naviguer vers la page de connexion
+                       await Auth().loginWithGoogle();
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Bottombar()));
+                        setState(() {
+                        googleLoading = false;
+                       
+                      }
+              );}),
+            ])
                   ],
                 ),
-            ],
+            
           ),
         ),
-      ),
-    );
+      );
+    
   }
 }
